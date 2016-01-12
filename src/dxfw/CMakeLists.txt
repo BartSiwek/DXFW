@@ -11,4 +11,4 @@ set(PROJECT_SRCS
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 
-add_library(${PROJECT_NAME} "${PROJECT_SRCS}")
+add_library(${PROJECT_NAME} STATIC "${PROJECT_SRCS}")
