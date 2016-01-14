@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.4)
 
 project(dxfw-tests VERSION 0.1 LANGUAGES CXX)
 
-set(PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PROJECT_INCLUDE_DIR "${ROOT_INCLUDE_DIR}")
+set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw-tests")
 
 set(PROJECT_SRCS
   ${PROJECT_SOURCE_DIR}/main.cpp
