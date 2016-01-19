@@ -1,6 +1,10 @@
-#ifndef DXFW_H_
-#define DXFW_H_
+#ifndef DXFW_DXFW_H_
+#define DXFW_DXFW_H_
 
-void testMe();
+namespace dxfw {
 
-#endif  // DXFW_H_
+void PollEvents();
+
+}  // namespace dxfw
+
+#endif  // DXFW_DXFW_H_

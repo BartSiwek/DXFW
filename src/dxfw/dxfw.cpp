@@ -1,7 +1,19 @@
 #include "dxfw/dxfw.h"
 
-#include <iostream>
+#include <windows.h>
 
-void testMe() {
-	std::cout << "DXFW" << std::endl;
+namespace dxfw {
+
+void PollEvents() {
+  MSG msg;
+
+  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+    if (msg.message == WM_QUIT) {
+      break;
+    }
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
 }
+
+}  // namespace dxfw
