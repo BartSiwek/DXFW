@@ -1,15 +1,28 @@
 #include "dxfw/window.h"
 
+#include <stdint.h>
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
-#include <windows.h>
-#include <cstdint>
+struct dxfwWindow {
+  HWND m_handle_;
+  DWORD m_style_;
+  const char* m_caption_;
+  uint32_t m_width_;
+  uint32_t m_height_;
+  int32_t m_left_;
+  int32_t m_top_;
+};
+
+struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
+  return NULL;
+}
 
 
-namespace dxfw {
-
+/*
 Window* Window::Create(const WindowDescriptor& descriptor) {
   return nullptr;
 }
@@ -78,7 +91,6 @@ bool Window::ShouldClose() const {
   return false;
 }
 
-/*
 LRESULT CALLBACK InternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   if (msg != WM_CREATE) {
     // Messages other than WM_CREATE
@@ -105,5 +117,3 @@ LRESULT CALLBACK InternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
   }
 }
 */
-
-}  // namespace dxfw

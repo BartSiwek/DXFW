@@ -1,18 +1,15 @@
 #ifndef DXFW_WINDOW_H_
 #define DXFW_WINDOW_H_
 
+#include <stdint.h>
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
-#include <windows.h>
-#include <cstdint>
-
-namespace dxfw {
-
-struct WindowDescriptor {
-  WindowDescriptor() {}
-
+/*
+struct dxfwWindowDescriptor {
   const char* Caption = "";
   uint32_t Width = 640;
   uint32_t Height = 480;
@@ -59,7 +56,6 @@ class Window {
   int32_t m_left_;
   int32_t m_top_;
 };
-
-}  // namespace dxfw
+*/
 
 #endif  // DXFW_WINDOW_H_

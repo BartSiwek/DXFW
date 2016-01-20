@@ -1,20 +1,31 @@
 #ifndef DXFW_DXFW_H_
 #define DXFW_DXFW_H_
 
-#include "window.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <cstdlib>
+#include "dxfw/window.h"
+#include "dxfw/window_manager.h"
 
-namespace dxfw {
+#include <stdint.h>
+#include <stdbool.h>
 
-using AllocFunction = void*(*)(size_t);
-using DeallocFunction = void(*)(void*);
+typedef void*(*dxfw_alloc_function)(size_t);
+typedef void(*dxfw_dealloc_function)(void*);
+bool dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
 
-bool Initialize(AllocFunction alloc = malloc, DeallocFunction dealloc = free);
-void Terminate();
+bool dxfwInitialize();
+void dxfwTerminate();
 
-void PollOsEvents();
+void dxfwPollOsEvents();
 
-}  // namespace dxfw
+struct dxfwWindow;
+
+struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // DXFW_DXFW_H_
