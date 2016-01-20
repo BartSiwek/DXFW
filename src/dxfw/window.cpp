@@ -10,15 +10,22 @@
 
 namespace dxfw {
 
-Window::Window()
+Window* Window::Create(const WindowDescriptor& descriptor) {
+  return nullptr;
+}
+
+Window::Window(const WindowDescriptor& descriptor)
     : m_hwnd_(nullptr),
       m_style_(WS_OVERLAPPEDWINDOW | WS_VISIBLE),
-      m_caption_(""),
-      m_width_(640),
-      m_height_(480),
-      m_left_(0),
-      m_top_(0) {
+      m_caption_(descriptor.Caption),
+      m_width_(descriptor.Width),
+      m_height_(descriptor.Height),
+      m_left_(descriptor.Left),
+      m_top_(descriptor.Top) {
   // TODO
+}
+
+Window::~Window() {
 }
 
 HWND Window::GetHandle() const {
@@ -65,6 +72,10 @@ void Window::SetCaption(const char* caption) {
 
 const char* Window::GetCaption() const {
   return m_caption_;
+}
+
+bool Window::ShouldClose() const {
+  return false;
 }
 
 /*

@@ -10,6 +10,10 @@ set(PROJECT_SRCS
   ${PROJECT_SOURCE_DIR}/dxfw.cpp
   ${PROJECT_INCLUDE_DIR}/dxfw/window.h
   ${PROJECT_SOURCE_DIR}/window.cpp
+  ${PROJECT_INCLUDE_DIR}/dxfw/window_manager.h
+  ${PROJECT_SOURCE_DIR}/window_manager.cpp
+  ${PROJECT_INCLUDE_DIR}/dxfw/event_manager.h
+  ${PROJECT_SOURCE_DIR}/event_manager.cpp  
 )
 
 include_directories("${PROJECT_INCLUDE_DIR}")

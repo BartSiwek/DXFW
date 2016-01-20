@@ -10,10 +10,19 @@
 
 namespace dxfw {
 
+struct WindowDescriptor {
+  WindowDescriptor() {}
+
+  const char* Caption = "";
+  uint32_t Width = 640;
+  uint32_t Height = 480;
+  int32_t Left = 100;
+  int32_t Top = 100;
+};
+
 class Window {
  public:
-  Window();
-  ~Window();
+  static Window* Create(const WindowDescriptor& descriptor);
 
   HWND GetHandle() const;
 
@@ -31,7 +40,17 @@ class Window {
   void SetCaption(const char* caption);
   const char* GetCaption() const;
 
+  bool ShouldClose() const;
+
  private:
+  Window(const WindowDescriptor& descriptor);
+  ~Window();
+
+  Window(const Window& other) = delete;
+  Window(Window&& other) = delete;
+  Window& operator=(const Window& other) = delete;
+  Window& operator=(Window&& other) = delete;
+
   HWND m_hwnd_;
   DWORD m_style_;
   const char* m_caption_;
