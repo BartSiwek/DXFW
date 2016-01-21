@@ -1,7 +1,6 @@
 #include "dxfw/dxfw.h"
 #include "dxfw_internal.h"
 
-#include <stdint.h>
 #include <stdlib.h>
 
 /* GLOBAL VARIABLES */
@@ -48,4 +47,3 @@ void dxfwTerminate() {
 
   g_initialized_ = false;
 }
-

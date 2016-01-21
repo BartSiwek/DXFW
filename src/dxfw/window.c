@@ -1,31 +1,13 @@
 #include "dxfw/dxfw.h"
 #include "dxfw_internal.h"
 
-#include <stdint.h>
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
-/* WINDOW STRUCT */
-struct dxfwWindow {
-  struct dxfwWindow* m_next_;
-  HWND m_handle_;
-  DWORD m_style_;
-  const char* m_caption_;
-  uint32_t m_width_;
-  uint32_t m_height_;
-  bool m_should_close_;
-};
-
 /* FORWARDS */
 LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 /* GLOBALS */
 struct dxfwWindow* g_head_ = NULL;
 
-/* INIT & TERMINATE*/
+/* INIT & TERMINATE */
 void dxfwTerminateWindowHandling() {
   while (g_head_ != NULL) {
     struct dxfwWindow* current = g_head_;
@@ -78,15 +60,22 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 
   // Save window data and add to list
   struct dxfwWindow* window = (struct dxfwWindow*)dxfwAlloc(sizeof(struct dxfwWindow));
+  memset(window, 0, sizeof(struct dxfwWindow));
 
-  window->m_next_ = g_head_;
-  window->m_handle_ = handle;
-  window->m_style_ = style;
   window->m_caption_ = caption;
   window->m_width_ = width;
   window->m_height_ = height;
   window->m_should_close_ = false;
 
+  window->m_on_should_close_changed_ = NULL;
+  window->m_on_mouse_button_ = NULL;
+  window->m_on_mouse_move_ = NULL;
+  window->m_on_mouse_wheel_ = NULL;
+
+  window->m_handle_ = handle;
+  window->m_style_ = style;
+
+  window->m_next_ = g_head_;
   g_head_ = window;
 
   // Show window
@@ -97,15 +86,23 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   return window;
 }
 
+void dxfwDestroyWindow(struct dxfwWindow* window) {
+  struct dxfwWindow** current = &g_head_;
+  while(*current != NULL && *current != window) {
+    current = &(*current)->m_next_;
+  }
+  if(*current != NULL) {
+    *current = window->m_next_;
+  }
+  dxfwDealloc(window);
+}
+
+/* WINDOW STATE */
 bool dxfwShouldClose(struct dxfwWindow* window) {
   return window->m_should_close_;
 }
 
-/* WINDOW INTERNALS */
-LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-  return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
+/* EVENT MANEGEMENT */
 void dxfwPollOsEvents() {
   MSG msg;
 
@@ -118,50 +115,76 @@ void dxfwPollOsEvents() {
   }
 }
 
-/*
-HWND Window::GetHandle() const {
-  return m_hwnd_;
+/* WINDOW MANAGEMENT INTERNALS */
+struct dxfwWindow* dxfwFindWindow(HWND hwnd) {
+  struct dxfwWindow* ptr = g_head_;
+  while (ptr != NULL && ptr->m_handle_ != hwnd) {
+    ptr = ptr->m_next_;
+  }
+  return ptr;
 }
 
-void Window::SetSize(uint32_t width, uint32_t height) {
-  SetWidth(width);
-  SetHeight(height);
-}
+/* WINDOW OS INTERNALS */
+LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+  switch (msg) {
+    case WM_CREATE: {
+      // Register RAW Input
+      RAWINPUTDEVICE rid = { 0x01, 6, RIDEV_NOLEGACY | RIDEV_INPUTSINK, hwnd };
+      RegisterRawInputDevices(&rid, 1, sizeof(rid));
 
-void Window::SetPosition(int32_t left, int32_t top) {
-  m_left_ = left;
-  m_top_ = top;
-}
+      // Return 0 to allow the window to proceed in the creation process.
+      return 0;
+    }
+    case WM_PAINT: {
+      // This message is handled by the default handler to avoid a repeated sending of the message. This results in
+      // the ability to process all pending messages at once without getting stuck in an eternal loop.
+      break;
+    }
+    case WM_CLOSE: {
+      // This message is sent when a window or an application should terminate.
+      dxfwFireWindowClosedEvent(hwnd);
+      break;
+    }
+    case WM_SIZE: {
+      // dxfwFireWindowResizedEvent(hwnd, wparam, lparam);
+      break;
+    }
+    case WM_LBUTTONUP: {
+      dxfwFireMouseEvent(hwnd, DXFW_LEFT_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_UP, lparam);
+      break;
+    }
+    case WM_LBUTTONDOWN: {
+      dxfwFireMouseEvent(hwnd, DXFW_LEFT_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_DOWN, lparam);
+      break;
+    }
+    case WM_MBUTTONUP: {
+      dxfwFireMouseEvent(hwnd, DXFW_MIDDLE_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_UP, lparam);
+      break;
+    }
+    case WM_MBUTTONDOWN: {
+      dxfwFireMouseEvent(hwnd, DXFW_MIDDLE_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_DOWN, lparam);
+      break;
+    }
+    case WM_RBUTTONUP: {
+      dxfwFireMouseEvent(hwnd, DXFW_RIGHT_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_UP, lparam);
+      break;
+    }
+    case WM_RBUTTONDOWN: {
+      dxfwFireMouseEvent(hwnd, DXFW_RIGHT_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_DOWN, lparam);
+      break;
+    }
+    case WM_MOUSEMOVE: {
+      dxfwFireMouseMoveEvent(hwnd, lparam);
+      break;
+    }
+    case WM_MOUSEWHEEL: {
+      dxfwFireMouseWheelEvent(hwnd, wparam, lparam);
+      break;
+    }
+    case WM_INPUT: {
+      return dxfwFireKeyboardEvent(hwnd, lparam);
+    }
+  }
 
-uint32_t Window::GetWidth() const {
-  return m_width_;
+  return DefWindowProc(hwnd, msg, wparam, lparam);
 }
-
-uint32_t Window::GetHeight() const {
-  return m_height_;
-}
-
-int32_t Window::GetLeft() const {
-  return m_left_;
-}
-
-int32_t Window::GetTop() const {
-  return m_top_;
-}
-
-void Window::SetWidth(uint32_t width) {
-  m_width_ = width;
-}
-
-void Window::SetHeight(uint32_t height) {
-  m_height_ = height;
-}
-
-void Window::SetCaption(const char* caption) {
-  m_caption_ = caption;
-}
-
-const char* Window::GetCaption() const {
-  return m_caption_;
-}
-*/

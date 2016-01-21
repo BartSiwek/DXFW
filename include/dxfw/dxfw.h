@@ -8,20 +8,53 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+/* MEMORY MANAGEMENT */
 typedef void*(*dxfw_alloc_function)(size_t);
 typedef void(*dxfw_dealloc_function)(void*);
 bool dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
 
+/* INIT & TERMINATE */
 bool dxfwInitialize();
 void dxfwTerminate();
 
+/* WINDOW MANAGEMENT */
+struct dxfwWindow;
+struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption);
+void dxfwDestroyWindow(struct dxfwWindow* window);
+
+/* WINDOW STATE */
+bool dxfwShouldClose(struct dxfwWindow* window);
+
+/* EVENT MANEGEMENT */
 void dxfwPollOsEvents();
 
-struct dxfwWindow;
+/* SHOULD CLOSE EVENT */
+typedef void(*dxfw_on_should_close_changed)(struct dxfwWindow*, bool should_close);
+dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback);
 
-struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption);
+/* MOUSE EVENTS */
+typedef enum {
+  DXFW_LEFT_MOUSE_BUTTON,
+  DXFW_MIDDLE_MOUSE_BUTTON,
+  DXFW_RIGHT_MOUSE_BUTTON
+} dxfwMouseButton;
 
-bool dxfwShouldClose(struct dxfwWindow* window);
+typedef enum {
+  DXFW_MOUSE_BUTTON_UP,
+  DXFW_MOUSE_BUTTON_DOWN
+} dxfwMouseButtonAction;
+
+typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton button, dxfwMouseButtonAction action, int32_t x, int32_t y);
+dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback);
+
+typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int32_t x, int32_t y);
+dxfw_on_mouse_move dxfwSetMouseMoveCallback(struct dxfwWindow* window, dxfw_on_mouse_move callback);
+
+typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int32_t x, int32_t y, int32_t delta);
+dxfw_on_mouse_wheel dxfwSetMouseWheelCallback(struct dxfwWindow* window, dxfw_on_mouse_wheel callback);
+
+/* KEYBOARD EVENTS */
+// TODO
 
 #ifdef __cplusplus
 }
