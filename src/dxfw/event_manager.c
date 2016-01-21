@@ -1,1 +1,2 @@
-#include "dxfw/window_manager.h"
+#include "dxfw/dxfw.h"
+#include "dxfw_internal.h"

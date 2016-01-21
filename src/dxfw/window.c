@@ -1,4 +1,5 @@
-#include "dxfw/window.h"
+#include "dxfw/dxfw.h"
+#include "dxfw_internal.h"
 
 #include <stdint.h>
 
@@ -7,40 +8,117 @@
 #include <windows.h>
 #endif
 
+/* WINDOW STRUCT */
 struct dxfwWindow {
+  struct dxfwWindow* m_next_;
   HWND m_handle_;
   DWORD m_style_;
   const char* m_caption_;
   uint32_t m_width_;
   uint32_t m_height_;
-  int32_t m_left_;
-  int32_t m_top_;
+  bool m_should_close_;
 };
 
-struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
-  return NULL;
+/* FORWARDS */
+LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+/* GLOBALS */
+struct dxfwWindow* g_head_ = NULL;
+
+/* INIT & TERMINATE*/
+void dxfwTerminateWindowHandling() {
+  while (g_head_ != NULL) {
+    struct dxfwWindow* current = g_head_;
+    g_head_ = g_head_->m_next_;
+    dxfwDealloc(current);
+  }
 }
 
+/* WINDOW MANAGEMENT */
+struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
+  // Setup window class
+  WNDCLASSEXA wc;
+  memset(&wc, 0, sizeof(wc));
+
+  wc.cbSize = sizeof(WNDCLASSEX);
+  wc.style = CS_HREDRAW | CS_VREDRAW;
+  wc.lpfnWndProc = dxfwInternalWindowProc;
+  wc.cbClsExtra = 0;
+  wc.cbWndExtra = 0;
+  wc.hInstance = 0;
+  wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+  wc.lpszMenuName = NULL;
+  wc.lpszClassName = "DxfwWindow";
+  wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+  // Set style
+  DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+
+  // Register the class
+  RegisterClassExA(&wc);
+
+  // Calculate the size of the window
+  RECT rc;
+  rc.top = rc.left = 0;
+  rc.right = width;
+  rc.bottom = height;
+
+  // Adjust the window size for style
+  AdjustWindowRect(&rc, style, FALSE);
+
+  // Read back the adjusted values
+  int32_t lwidth = rc.right - rc.left;
+  int32_t lheight = rc.bottom - rc.top;
+
+  // Create the window
+  HWND handle = CreateWindowExA(0, wc.lpszClassName, caption, style, CW_USEDEFAULT, CW_USEDEFAULT,
+                                lwidth /* width */, lheight /* height */, NULL, NULL, NULL, NULL);
+
+  // Save window data and add to list
+  struct dxfwWindow* window = (struct dxfwWindow*)dxfwAlloc(sizeof(struct dxfwWindow));
+
+  window->m_next_ = g_head_;
+  window->m_handle_ = handle;
+  window->m_style_ = style;
+  window->m_caption_ = caption;
+  window->m_width_ = width;
+  window->m_height_ = height;
+  window->m_should_close_ = false;
+
+  g_head_ = window;
+
+  // Show window
+  ShowWindow(handle, SW_SHOWNORMAL);
+  UpdateWindow(handle);
+
+  // Done
+  return window;
+}
+
+bool dxfwShouldClose(struct dxfwWindow* window) {
+  return window->m_should_close_;
+}
+
+/* WINDOW INTERNALS */
+LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+  return DefWindowProc(hwnd, msg, wparam, lparam);
+}
+
+void dxfwPollOsEvents() {
+  MSG msg;
+
+  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+    if (msg.message == WM_QUIT) {
+      break;
+    }
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+}
 
 /*
-Window* Window::Create(const WindowDescriptor& descriptor) {
-  return nullptr;
-}
-
-Window::Window(const WindowDescriptor& descriptor)
-    : m_hwnd_(nullptr),
-      m_style_(WS_OVERLAPPEDWINDOW | WS_VISIBLE),
-      m_caption_(descriptor.Caption),
-      m_width_(descriptor.Width),
-      m_height_(descriptor.Height),
-      m_left_(descriptor.Left),
-      m_top_(descriptor.Top) {
-  // TODO
-}
-
-Window::~Window() {
-}
-
 HWND Window::GetHandle() const {
   return m_hwnd_;
 }
@@ -85,35 +163,5 @@ void Window::SetCaption(const char* caption) {
 
 const char* Window::GetCaption() const {
   return m_caption_;
-}
-
-bool Window::ShouldClose() const {
-  return false;
-}
-
-LRESULT CALLBACK InternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-  if (msg != WM_CREATE) {
-    // Messages other than WM_CREATE
-    auto ptr = GetWindowLongPtr(hwnd, 0);
-    WindowsProcInterface* window_proc = reinterpret_cast<WindowsProcInterface*>(ptr);
-
-    if (window_proc != NULL) {
-      return window_proc->WindowProc(hwnd, msg, wparam, lparam);
-    }
-    return DefWindowProc(hwnd, msg, wparam, lparam);
-  }
-  else {
-    // WM_CREATE message
-    auto create_struct = reinterpret_cast<LPCREATESTRUCT>(lparam);
-    WindowsProcInterface* window_proc = reinterpret_cast<WindowsProcInterface*>(create_struct->lpCreateParams);
-
-    if (window_proc != NULL) {
-      SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(window_proc));
-      return window_proc->WindowProc(hwnd, msg, wparam, lparam);
-    }
-    else {
-      return DefWindowProc(hwnd, msg, wparam, lparam);
-    }
-  }
 }
 */

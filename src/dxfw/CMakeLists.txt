@@ -7,12 +7,9 @@ set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw")
 
 set(PROJECT_SRCS
   ${PROJECT_INCLUDE_DIR}/dxfw/dxfw.h
+  ${PROJECT_SOURCE_DIR}/dxfw_internal.h
   ${PROJECT_SOURCE_DIR}/dxfw.c
-  ${PROJECT_INCLUDE_DIR}/dxfw/window.h
   ${PROJECT_SOURCE_DIR}/window.c
-  ${PROJECT_INCLUDE_DIR}/dxfw/window_manager.h
-  ${PROJECT_SOURCE_DIR}/window_manager.c
-  ${PROJECT_INCLUDE_DIR}/dxfw/event_manager.h
   ${PROJECT_SOURCE_DIR}/event_manager.c  
 )
 
