@@ -71,6 +71,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   window->m_on_mouse_button_ = NULL;
   window->m_on_mouse_move_ = NULL;
   window->m_on_mouse_wheel_ = NULL;
+  window->m_on_keyboard_ = NULL;
 
   window->m_handle_ = handle;
   window->m_style_ = style;

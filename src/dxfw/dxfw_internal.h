@@ -22,6 +22,7 @@ struct dxfwWindow {
   dxfw_on_mouse_button m_on_mouse_button_;
   dxfw_on_mouse_move m_on_mouse_move_;
   dxfw_on_mouse_wheel m_on_mouse_wheel_;
+  dxfw_on_keyboard m_on_keyboard_;
 
   // OS Specific stuff
   HWND m_handle_;
@@ -47,5 +48,9 @@ void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction
 void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam);
 void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam);
 LPARAM dxfwFireKeyboardEvent(HWND hwnd, LPARAM lparam);
+
+dxfwVirtualKeyCode dxfwGetKeyCode(USHORT windows_key_code);
+void dxfwRegisterKeyDown(dxfwVirtualKeyCode key_code);
+void dxfwRegisterKeyUp(dxfwVirtualKeyCode key_code);
 
 #endif  // DXFW_DXFW_INTERNAL_H_

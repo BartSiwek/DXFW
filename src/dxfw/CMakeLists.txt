@@ -9,8 +9,9 @@ set(PROJECT_SRCS
   ${PROJECT_INCLUDE_DIR}/dxfw/dxfw.h
   ${PROJECT_SOURCE_DIR}/dxfw_internal.h
   ${PROJECT_SOURCE_DIR}/dxfw.c
+  ${PROJECT_SOURCE_DIR}/event_manager.c
+  ${PROJECT_SOURCE_DIR}/keyboard.c
   ${PROJECT_SOURCE_DIR}/window.c
-  ${PROJECT_SOURCE_DIR}/event_manager.c  
 )
 
 include_directories("${PROJECT_INCLUDE_DIR}")

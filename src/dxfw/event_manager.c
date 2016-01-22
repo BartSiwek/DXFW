@@ -69,46 +69,41 @@ void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam) {
 }
 
 /* KEYBOARD EVENTS */
+dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyboard callback) {
+  dxfw_on_keyboard prev = window->m_on_keyboard_;
+  window->m_on_keyboard_ = callback;
+  return prev;
+}
+
 LPARAM dxfwFireKeyboardEvent(HWND hwnd, LPARAM lparam) {
   RAWINPUT ri;
   UINT size = sizeof(RAWINPUT);
   GetRawInputData((HRAWINPUT)lparam, RID_INPUT, &ri, &size, sizeof(RAWINPUTHEADER));
   if (ri.header.dwType == RIM_TYPEKEYBOARD) {
-    /*
-    VirtualKeyCode key_code = GetKeyCode(ri.data.keyboard.VKey);
+    dxfwVirtualKeyCode key_code = dxfwGetKeyCode(ri.data.keyboard.VKey);
 
-    VirtualKeyState state;
+    dxfwVirtualKeyState state;
     if ((ri.data.keyboard.Flags & RI_KEY_BREAK) != 0) {
       // Key is UP
-      RegisterKeyUp(key_code);
-      state = KEY_STATE_UP;
-    }
-    else {
+      dxfwRegisterKeyUp(key_code);
+      state = DXFW_KEY_STATE_UP;
+    } else {
       // Key is DOWN
-      RegisterKeyDown(key_code);
-      state = KEY_STATE_DOWN;
+      dxfwRegisterKeyDown(key_code);
+      state = DXFW_KEY_STATE_DOWN;
     }
 
-    VirtualKeyModifierFlags modifier_flags = GetModifierFlags();
-    VirtualKeyState previous_state = GetPreviousState(key_code);
-    */
+    dxfwVirtualKeyModifiers modifier_flags = dxfwGetModifierFlags();
+    dxfwVirtualKeyState previous_state = dxfwGetPreviousKeyState(key_code);
+
     HWND acctive_hwnd = GetActiveWindow();
     struct dxfwWindow* window = dxfwFindWindow(hwnd);
-    if (window != NULL) {
-      /*
-      Elg::DirectX::Events::Event e;
-      e.EventType = Elg::DirectX::Events::KEYBOARD_EVENT;
-      e.KeyboardEvent.Window = window;
-      e.KeyboardEvent.KeyCode = key_code;
-      e.KeyboardEvent.ModifierFlags = modifier_flags;
-      e.KeyboardEvent.State = state;
-      e.KeyboardEvent.PreviousState = previous_state;
-
-      m_event_manager_.FireEvent(&e);
-      */
+    if (window != NULL && window->m_on_keyboard_) {
+      (*window->m_on_keyboard_)(window, key_code, modifier_flags, state, previous_state);
     }
 
     return 0;  // Return 0 to mark the event as handled
   }
   return 1;  // Return 1 to mark the event as NOT handled
 }
+
