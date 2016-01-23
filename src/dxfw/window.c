@@ -62,9 +62,6 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   struct dxfwWindow* window = (struct dxfwWindow*)dxfwAlloc(sizeof(struct dxfwWindow));
   memset(window, 0, sizeof(struct dxfwWindow));
 
-  window->m_caption_ = caption;
-  window->m_width_ = width;
-  window->m_height_ = height;
   window->m_should_close_ = false;
 
   window->m_on_should_close_changed_ = NULL;

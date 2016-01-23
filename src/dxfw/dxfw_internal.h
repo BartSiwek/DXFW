@@ -12,9 +12,6 @@
 /* STRUCTS */
 struct dxfwWindow {
   // Settings
-  const char* m_caption_;
-  uint32_t m_width_;
-  uint32_t m_height_;
   bool m_should_close_;
 
   // Events
