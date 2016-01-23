@@ -23,7 +23,10 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 void dxfwDestroyWindow(struct dxfwWindow* window);
 
 /* WINDOW STATE */
-bool dxfwShouldClose(struct dxfwWindow* window);
+void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption);
+void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height); 
+void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height);
+bool dxfwShouldWindowClose(struct dxfwWindow* window);
 
 /* EVENT MANEGEMENT */
 void dxfwPollOsEvents();

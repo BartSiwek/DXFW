@@ -15,4 +15,5 @@ add_executable(${PROJECT_NAME} "${PROJECT_SRCS}")
 
 target_link_libraries(${PROJECT_NAME} dxfw)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "_UNICODE;UNICODE")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/subsystem:windows /ENTRY:mainCRTStartup")

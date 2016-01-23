@@ -18,8 +18,15 @@ void dxfwTerminateWindowHandling() {
 
 /* WINDOW MANAGEMENT */
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
+  // Convert caption
+  WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
+  if (converted_caption == NULL) {
+    // TODO: Handle error
+    return NULL;
+  }
+
   // Setup window class
-  WNDCLASSEXA wc;
+  WNDCLASSEXW wc;
   memset(&wc, 0, sizeof(wc));
 
   wc.cbSize = sizeof(WNDCLASSEX);
@@ -32,14 +39,14 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
   wc.lpszMenuName = NULL;
-  wc.lpszClassName = "DxfwWindow";
+  wc.lpszClassName = L"DxfwWindow";
   wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
   // Set style
   DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
   // Register the class
-  RegisterClassExA(&wc);
+  RegisterClassExW(&wc);
 
   // Calculate the size of the window
   RECT rc;
@@ -55,8 +62,11 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   int32_t lheight = rc.bottom - rc.top;
 
   // Create the window
-  HWND handle = CreateWindowExA(0, wc.lpszClassName, caption, style, CW_USEDEFAULT, CW_USEDEFAULT,
-                                lwidth /* width */, lheight /* height */, NULL, NULL, NULL, NULL);
+  HWND handle = CreateWindowExW(0, wc.lpszClassName, converted_caption, style, CW_USEDEFAULT, CW_USEDEFAULT,
+                                lwidth /* width */, lheight /* height */, NULL, NULL, GetModuleHandleW(NULL), NULL);
+
+  // Free caption
+  dxfwDealloc(converted_caption);
 
   // Save window data and add to list
   struct dxfwWindow* window = (struct dxfwWindow*)dxfwAlloc(sizeof(struct dxfwWindow));
@@ -96,7 +106,48 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
 }
 
 /* WINDOW STATE */
-bool dxfwShouldClose(struct dxfwWindow* window) {
+void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
+  WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
+  if (converted_caption == NULL) {
+    // TODO: Handle error
+    return;
+  }
+
+  SetWindowTextW(window->m_handle_, converted_caption);
+  
+  dxfwDealloc(converted_caption);
+}
+
+void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height) {
+  RECT r;
+  BOOL result = GetClientRect(window->m_handle_, &r);
+  if (!result) {
+    // TODO: handle error
+  }
+  *width = (uint32_t)(r.right - r.left);
+  *height = (uint32_t)(r.bottom - r.top);
+}
+
+void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height) {
+  // Get the current pos
+  RECT r;
+  BOOL result = GetClientRect(window->m_handle_, &r);
+
+  // Client rectangle
+  r.right = r.left + width;
+  r.bottom = r.top + height;
+
+  // Get the style
+  LONG style = GetWindowLong(window->m_handle_, GWL_STYLE);
+
+  // Adjust the window size for style
+  AdjustWindowRect(&r, style, FALSE);
+
+  // Set window pos
+  SetWindowPos(window->m_handle_, HWND_TOPMOST, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_NOCOPYBITS);
+}
+
+bool dxfwShouldWindowClose(struct dxfwWindow* window) {
   return window->m_should_close_;
 }
 

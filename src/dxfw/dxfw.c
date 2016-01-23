@@ -28,6 +28,25 @@ void dxfwDealloc(void* ptr) {
   (*g_dealloc_)(ptr);
 }
 
+/* HELPER FUNCTIONS */
+WCHAR* dxfwUtf8ToWchar(const char* input) {
+  int length = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
+
+  if (length == 0) {
+    return NULL;
+  }
+    
+  WCHAR* result = (WCHAR*)dxfwAlloc(length * sizeof(WCHAR));
+
+  int conversion_result = MultiByteToWideChar(CP_UTF8, 0, input, -1, result, length);
+  if (conversion_result == 0) {
+    dxfwDealloc(result);
+    return NULL;
+  }
+
+  return result;
+}
+
 /* INIT & TERMINATE */
 bool dxfwInitialize() {
   if (g_initialized_) {

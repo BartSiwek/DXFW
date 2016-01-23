@@ -17,3 +17,5 @@ set(PROJECT_SRCS
 include_directories("${PROJECT_INCLUDE_DIR}")
 
 add_library(${PROJECT_NAME} STATIC "${PROJECT_SRCS}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "_UNICODE;UNICODE")

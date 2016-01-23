@@ -33,6 +33,9 @@ struct dxfwWindow {
 void* dxfwAlloc(size_t size);
 void dxfwDealloc(void* ptr);
 
+/* HELPER FUNCTIONS */
+WCHAR* dxfwUtf8ToWchar(const char* input);
+
 /* INIT & TERMINATE */
 void dxfwTerminateWindowHandling();
 
