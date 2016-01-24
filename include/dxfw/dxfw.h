@@ -11,11 +11,14 @@ extern "C" {
 /* MEMORY MANAGEMENT */
 typedef void*(*dxfw_alloc_function)(size_t);
 typedef void(*dxfw_dealloc_function)(void*);
-bool dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
+void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
 
 /* INIT & TERMINATE */
 bool dxfwInitialize();
 void dxfwTerminate();
+
+/* TIME MANAGEMENT */
+double dxfwGetTime();
 
 /* WINDOW MANAGEMENT */
 struct dxfwWindow;

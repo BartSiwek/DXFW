@@ -7,17 +7,19 @@
 bool g_initialized_ = false;
 dxfw_alloc_function g_alloc_ = malloc;
 dxfw_dealloc_function g_dealloc_ = free;
+double g_timer_resolution_ = 1.0;
+int64_t g_timer_start_ = 0;
 
 /* MEMORY MANAGEMENT */
-bool dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
+void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
   if (g_initialized_) {
-    return false;
+    return;
   }
 
   g_alloc_ = alloc;
   g_dealloc_ = dealloc;
 
-  return true;
+  return;
 }
 
 void* dxfwAlloc(size_t size) {
@@ -48,12 +50,22 @@ WCHAR* dxfwUtf8ToWchar(const char* input) {
 }
 
 /* INIT & TERMINATE */
+void dxfwInitializeTimer() {
+  LARGE_INTEGER frequency;
+  QueryPerformanceFrequency(&frequency);
+  g_timer_resolution_ = 1.0 / (double)frequency.QuadPart;
+
+  LARGE_INTEGER timestamp;
+  QueryPerformanceCounter(&timestamp);
+  g_timer_start_ = timestamp.QuadPart;
+}
+
 bool dxfwInitialize() {
   if (g_initialized_) {
     return false;
   }
 
-  dxfwTerminateWindowHandling();
+  dxfwInitializeTimer();
 
   g_initialized_ = true;
   return true;
@@ -64,5 +76,14 @@ void dxfwTerminate() {
     return;
   }
 
+  dxfwTerminateWindowHandling();
+
   g_initialized_ = false;
+}
+
+/* TIME MANAGEMENT */
+double dxfwGetTime() {
+  LARGE_INTEGER timestamp;
+  QueryPerformanceCounter(&timestamp);
+  return (double)(timestamp.QuadPart - g_timer_start_) * g_timer_resolution_;
 }
