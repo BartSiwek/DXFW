@@ -1,23 +1,28 @@
 #include <dxfw/dxfw.h>
 
+void errorCallback(dxfwError error) {
+  switch(error) {
+   case DXFW_NO_ERROR: break;
+   case DXFW_UTF8_CONVERSION_ERROR: break;
+   case DXFW_MAX_ERRORS: break;
+   default: break;
+  }
+}
+
 int main(int argc, char* *argv) {
-  if (!dxfwInitialize())
+  if (!dxfwInitialize()) {
     return -1;
+  }
 
-  dxfwWindow* window = dxfwCreateWindow(640, 480, "Hello World");
+  auto window = dxfwCreateWindow(640, 480, "Hello World");
 
-  if (!window)
-  {
+  if (!window) {
     dxfwTerminate();
     return -1;
   }
 
-  while (!dxfwShouldWindowClose(window))
-  {
-    // Render here
-
-    // Swap buffers
-
+  while (!dxfwShouldWindowClose(window)) {
+    // Render here & swap buffers
     dxfwPollOsEvents();
   }
 

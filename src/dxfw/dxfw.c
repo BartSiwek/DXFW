@@ -9,6 +9,7 @@ dxfw_alloc_function g_alloc_ = malloc;
 dxfw_dealloc_function g_dealloc_ = free;
 double g_timer_resolution_ = 1.0;
 int64_t g_timer_start_ = 0;
+dxfw_on_error g_error_callback_ = NULL;
 
 /* MEMORY MANAGEMENT */
 void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
@@ -18,8 +19,6 @@ void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
 
   g_alloc_ = alloc;
   g_dealloc_ = dealloc;
-
-  return;
 }
 
 void* dxfwAlloc(size_t size) {
@@ -79,6 +78,19 @@ void dxfwTerminate() {
   dxfwTerminateWindowHandling();
 
   g_initialized_ = false;
+}
+
+/* ERROR HANDLING */
+dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
+  dxfw_on_error prev = g_error_callback_;
+  g_error_callback_ = callback;
+  return prev;
+}
+
+void dxfwReportError(dxfwError error) {
+  if(g_error_callback_ != NULL) {
+    (*g_error_callback_)(error);
+  }
 }
 
 /* TIME MANAGEMENT */

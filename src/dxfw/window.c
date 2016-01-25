@@ -21,7 +21,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   // Convert caption
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
-    // TODO: Handle error
+    dxfwReportError(DXFW_UTF8_CONVERSION_ERROR);
     return NULL;
   }
 
@@ -109,7 +109,7 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
-    // TODO: Handle error
+    dxfwReportError(DXFW_UTF8_CONVERSION_ERROR);
     return;
   }
 
@@ -120,10 +120,7 @@ void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
 
 void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height) {
   RECT r;
-  BOOL result = GetClientRect(window->m_handle_, &r);
-  if (!result) {
-    // TODO: handle error
-  }
+  GetClientRect(window->m_handle_, &r);
   *width = (uint32_t)(r.right - r.left);
   *height = (uint32_t)(r.bottom - r.top);
 }
@@ -131,7 +128,7 @@ void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* hei
 void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height) {
   // Get the current pos
   RECT r;
-  BOOL result = GetClientRect(window->m_handle_, &r);
+  GetClientRect(window->m_handle_, &r);
 
   // Client rectangle
   r.right = r.left + width;

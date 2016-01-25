@@ -9,6 +9,8 @@
 #include <windows.h>
 #endif
 
+#include "dxfw/dxfw.h"
+
 /* STRUCTS */
 struct dxfwWindow {
   // Settings
@@ -38,6 +40,9 @@ WCHAR* dxfwUtf8ToWchar(const char* input);
 
 /* INIT & TERMINATE */
 void dxfwTerminateWindowHandling();
+
+/* ERROR HANDLING */
+void dxfwReportError(dxfwError error);
 
 /* WINDOW MANAGEMENT INTERNALS */
 struct dxfwWindow* dxfwFindWindow(HWND hwnd);

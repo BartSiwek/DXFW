@@ -17,6 +17,15 @@ void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
 bool dxfwInitialize();
 void dxfwTerminate();
 
+/* ERROR HANDLING */
+typedef enum {
+  DXFW_NO_ERROR,
+  DXFW_UTF8_CONVERSION_ERROR,
+  DXFW_MAX_ERRORS,
+} dxfwError;
+typedef void(*dxfw_on_error)(dxfwError);
+dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback);
+
 /* TIME MANAGEMENT */
 double dxfwGetTime();
 
