@@ -13,14 +13,13 @@ dxfw_on_error g_error_callback_ = NULL;
 
 /* MEMORY MANAGEMENT */
 void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
-  if (g_initialized_) {
-    return;
-  }
+  DXFW_CHECK_IF_INITIALIZED();
 
   g_alloc_ = alloc;
   g_dealloc_ = dealloc;
 }
 
+/* MEMORY MANAGEMENT - INTERNAL */
 void* dxfwAlloc(size_t size) {
   return (*g_alloc_)(size);
 }
@@ -29,7 +28,7 @@ void dxfwDealloc(void* ptr) {
   (*g_dealloc_)(ptr);
 }
 
-/* HELPER FUNCTIONS */
+/* HELPER FUNCTIONS - INTERNAL */
 WCHAR* dxfwUtf8ToWchar(const char* input) {
   int length = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
 
@@ -48,7 +47,7 @@ WCHAR* dxfwUtf8ToWchar(const char* input) {
   return result;
 }
 
-/* INIT & TERMINATE */
+/* INIT & TERMINATE - INTERNAL */
 void dxfwInitializeTimer() {
   LARGE_INTEGER frequency;
   QueryPerformanceFrequency(&frequency);
@@ -59,10 +58,9 @@ void dxfwInitializeTimer() {
   g_timer_start_ = timestamp.QuadPart;
 }
 
+/* INIT & TERMINATE */
 bool dxfwInitialize() {
-  if (g_initialized_) {
-    return false;
-  }
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(false);
 
   dxfwInitializeTimer();
 
@@ -71,9 +69,7 @@ bool dxfwInitialize() {
 }
 
 void dxfwTerminate() {
-  if (!g_initialized_) {
-    return;
-  }
+  DXFW_CHECK_IF_INITIALIZED();
 
   dxfwTerminateWindowHandling();
 
@@ -82,11 +78,14 @@ void dxfwTerminate() {
 
 /* ERROR HANDLING */
 dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+
   dxfw_on_error prev = g_error_callback_;
   g_error_callback_ = callback;
   return prev;
 }
 
+/* ERROR HANDLING - INTERNAL */
 void dxfwReportError(dxfwError error) {
   if(g_error_callback_ != NULL) {
     (*g_error_callback_)(error);
@@ -95,6 +94,8 @@ void dxfwReportError(dxfwError error) {
 
 /* TIME MANAGEMENT */
 double dxfwGetTime() {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(0.0);
+
   LARGE_INTEGER timestamp;
   QueryPerformanceCounter(&timestamp);
   return (double)(timestamp.QuadPart - g_timer_start_) * g_timer_resolution_;

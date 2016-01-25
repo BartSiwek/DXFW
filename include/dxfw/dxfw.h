@@ -20,6 +20,7 @@ void dxfwTerminate();
 /* ERROR HANDLING */
 typedef enum {
   DXFW_NO_ERROR,
+  DXFW_NOT_INITIALIZED,
   DXFW_UTF8_CONVERSION_ERROR,
   DXFW_MAX_ERRORS,
 } dxfwError;

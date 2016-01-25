@@ -7,7 +7,7 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /* GLOBALS */
 struct dxfwWindow* g_head_ = NULL;
 
-/* INIT & TERMINATE */
+/* INIT & TERMINATE - INTERNAL */
 void dxfwTerminateWindowHandling() {
   while (g_head_ != NULL) {
     struct dxfwWindow* current = g_head_;
@@ -18,6 +18,8 @@ void dxfwTerminateWindowHandling() {
 
 /* WINDOW MANAGEMENT */
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+
   // Convert caption
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
@@ -95,6 +97,8 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 }
 
 void dxfwDestroyWindow(struct dxfwWindow* window) {
+  DXFW_CHECK_IF_INITIALIZED();
+
   struct dxfwWindow** current = &g_head_;
   while(*current != NULL && *current != window) {
     current = &(*current)->m_next_;
@@ -107,6 +111,8 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
 
 /* WINDOW STATE */
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
+  DXFW_CHECK_IF_INITIALIZED();
+
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
     dxfwReportError(DXFW_UTF8_CONVERSION_ERROR);
@@ -119,6 +125,8 @@ void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
 }
 
 void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height) {
+  DXFW_CHECK_IF_INITIALIZED();
+
   RECT r;
   GetClientRect(window->m_handle_, &r);
   *width = (uint32_t)(r.right - r.left);
@@ -126,6 +134,8 @@ void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* hei
 }
 
 void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height) {
+  DXFW_CHECK_IF_INITIALIZED();
+
   // Get the current pos
   RECT r;
   GetClientRect(window->m_handle_, &r);
@@ -145,6 +155,8 @@ void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t heigh
 }
 
 bool dxfwShouldWindowClose(struct dxfwWindow* window) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(false);
+
   return window->m_should_close_;
 }
 
@@ -161,7 +173,7 @@ void dxfwPollOsEvents() {
   }
 }
 
-/* WINDOW MANAGEMENT INTERNALS */
+/* WINDOW MANAGEMENT - INTERNAL */
 struct dxfwWindow* dxfwFindWindow(HWND hwnd) {
   struct dxfwWindow* ptr = g_head_;
   while (ptr != NULL && ptr->m_handle_ != hwnd) {

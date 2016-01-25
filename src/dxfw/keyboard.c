@@ -266,6 +266,32 @@ dxfwVirtualKeyState g_keyboard_state_[DXFW_KEY_COUNT] = { DXFW_KEY_STATE_UP };
 dxfwVirtualKeyState g_keyboard_previous_state_[DXFW_KEY_COUNT] = { DXFW_KEY_STATE_UP };
 
 /* KEYBOARD FUNCTIONS */
+dxfwVirtualKeyState dxfwGetKeyState(dxfwVirtualKeyCode key_code) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(DXFW_KEY_NONE);
+  return g_keyboard_state_[key_code];
+}
+
+dxfwVirtualKeyState dxfwGetPreviousKeyState(dxfwVirtualKeyCode key_code) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(DXFW_KEY_STATE_UP);
+  return g_keyboard_previous_state_[key_code];
+}
+
+dxfwVirtualKeyModifiers dxfwGetModifierFlags() {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(DXFW_KEY_MODIFIER_NONE);
+
+  int32_t modifier_flags = DXFW_KEY_MODIFIER_NONE;
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LSHIFT] * DXFW_KEY_MODIFIER_SHIFT);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RSHIFT] * DXFW_KEY_MODIFIER_SHIFT);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LCTRL] * DXFW_KEY_MODIFIER_CTRL);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RCTRL] * DXFW_KEY_MODIFIER_CTRL);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_ALT] * DXFW_KEY_MODIFIER_ALT);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LWIN] * DXFW_KEY_MODIFIER_LWIN);
+  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RWIN] * DXFW_KEY_MODIFIER_RWIN);
+
+  return (dxfwVirtualKeyModifiers)modifier_flags;
+}
+
+/* KEYBOARD FUNCTIONS - INTERNAL */
 dxfwVirtualKeyCode dxfwGetKeyCode(USHORT windows_key_code) {
   return g_windows_to_virtual_key_code_[windows_key_code];
 }
@@ -278,25 +304,4 @@ void dxfwRegisterKeyDown(dxfwVirtualKeyCode key_code) {
 void dxfwRegisterKeyUp(dxfwVirtualKeyCode key_code) {
   g_keyboard_previous_state_[key_code] = g_keyboard_state_[key_code];
   g_keyboard_state_[key_code] = DXFW_KEY_STATE_UP;
-}
-
-dxfwVirtualKeyState dxfwGetKeyState(dxfwVirtualKeyCode key_code) {
-  return g_keyboard_state_[key_code];
-}
-
-dxfwVirtualKeyState dxfwGetPreviousKeyState(dxfwVirtualKeyCode key_code) {
-  return g_keyboard_previous_state_[key_code];
-}
-
-dxfwVirtualKeyModifiers dxfwGetModifierFlags() {
-  int32_t modifier_flags = DXFW_KEY_MODIFIER_NONE;
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LSHIFT] * DXFW_KEY_MODIFIER_SHIFT);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RSHIFT] * DXFW_KEY_MODIFIER_SHIFT);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LCTRL] * DXFW_KEY_MODIFIER_CTRL);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RCTRL] * DXFW_KEY_MODIFIER_CTRL);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_ALT] * DXFW_KEY_MODIFIER_ALT);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_LWIN] * DXFW_KEY_MODIFIER_LWIN);
-  modifier_flags |= (g_keyboard_state_[DXFW_KEY_RWIN] * DXFW_KEY_MODIFIER_RWIN);
-
-  return (dxfwVirtualKeyModifiers)modifier_flags;
 }

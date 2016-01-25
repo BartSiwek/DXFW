@@ -11,6 +11,22 @@
 
 #include "dxfw/dxfw.h"
 
+/* GLOBAL VARIABLES */
+extern bool g_initialized_;
+
+/* MACROS */
+#define DXFW_CHECK_IF_INITIALIZED()             \
+    if (!g_initialized_) {                      \
+        dxfwReportError(DXFW_NOT_INITIALIZED);  \
+        return;                                 \
+    }
+
+#define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x) \
+    if (!g_initialized_) {                      \
+        dxfwReportError(DXFW_NOT_INITIALIZED);  \
+        return x;                               \
+    }
+
 /* STRUCTS */
 struct dxfwWindow {
   // Settings
@@ -31,23 +47,23 @@ struct dxfwWindow {
   struct dxfwWindow* m_next_;
 };
 
-/* MEMORY MANAGEMENT */
+/* MEMORY MANAGEMENT - INTERNAL */
 void* dxfwAlloc(size_t size);
 void dxfwDealloc(void* ptr);
 
-/* HELPER FUNCTIONS */
+/* HELPER FUNCTIONS - INTERNAL */
 WCHAR* dxfwUtf8ToWchar(const char* input);
 
 /* INIT & TERMINATE */
 void dxfwTerminateWindowHandling();
 
-/* ERROR HANDLING */
+/* ERROR HANDLING - INTERNAL */
 void dxfwReportError(dxfwError error);
 
 /* WINDOW MANAGEMENT INTERNALS */
 struct dxfwWindow* dxfwFindWindow(HWND hwnd);
 
-/* WINDOW EVENT MANAGEMENT INTERNALS */
+/* WINDOW EVENT MANAGEMENT - INTERNAL */
 void dxfwFireWindowClosedEvent(HWND hwnd);
 void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction action, LPARAM lparam);
 void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam);
