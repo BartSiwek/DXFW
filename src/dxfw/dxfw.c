@@ -60,7 +60,9 @@ void dxfwInitializeTimer() {
 
 /* INIT & TERMINATE */
 bool dxfwInitialize() {
-  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(false);
+  if (g_initialized_) {
+    return false;
+  }
 
   dxfwInitializeTimer();
 
