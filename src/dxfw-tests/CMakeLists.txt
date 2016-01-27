@@ -17,3 +17,8 @@ add_executable(${PROJECT_NAME} "${PROJECT_SRCS}")
 target_link_libraries(${PROJECT_NAME} dxfw libcmocka)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "_UNICODE;UNICODE"	)
+
+get_target_property(CMOCKA_DLL_LOCATION libcmocka "IMPORTED_LOCATION")
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMOCKA_DLL_LOCATION}" $<TARGET_FILE_DIR:${PROJECT_NAME}>)
