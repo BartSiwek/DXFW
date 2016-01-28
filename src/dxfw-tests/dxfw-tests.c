@@ -3,14 +3,20 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+#include <dxfw/dxfw.h>
+
 /* A test case that does nothing and succeeds. */
-static void null_test_success(void **state) {
-  (void)state; /* unused */
+static void init_test(void **state) {
+  dxfwInitialize();
+
+  struct dxfwWindow* window = dxfwCreateWindow(640, 480, "Test");
+
+  dxfwTerminate();
 }
 
-int main(void) {
+int run_dxfw_tests() {
   const struct CMUnitTest tests[] = {
-    cmocka_unit_test(null_test_success),
+    cmocka_unit_test(init_test),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
