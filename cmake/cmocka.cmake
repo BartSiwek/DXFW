@@ -10,7 +10,7 @@ ExternalProject_Add(
   GIT_REPOSITORY git://git.cryptomilk.org/projects/cmocka.git
   GIT_TAG cmocka-1.0.1
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/cmocka
-  PATCH_COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/cmocka.vs2015.patch"
+  PATCH_COMMAND "${GIT_EXECUTABLE}" checkout . COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/cmocka.vs2015.patch"
   INSTALL_COMMAND ""
 )
 
