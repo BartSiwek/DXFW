@@ -71,7 +71,9 @@ bool dxfwInitialize() {
 }
 
 void dxfwTerminate() {
-  DXFW_CHECK_IF_INITIALIZED();
+  if (!g_initialized_) {
+    return;
+  }
 
   dxfwTerminateWindowHandling();
 
