@@ -19,10 +19,11 @@ void dxfwTerminate();
 
 /* ERROR HANDLING */
 typedef enum {
-  DXFW_NO_ERROR,
-  DXFW_NOT_INITIALIZED,
-  DXFW_UTF8_CONVERSION_ERROR,
-  DXFW_MAX_ERRORS,
+  DXFW_ERROR_NONE,
+  DXFW_ERROR_ALREADY_INITIALIZED,
+  DXFW_ERROR_NOT_INITIALIZED,
+  DXFW_ERROR_UTF8_CONVERSION,
+  DXFW_ERROR_MAX  // Must be last entry
 } dxfwError;
 typedef void(*dxfw_on_error)(dxfwError);
 dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback);

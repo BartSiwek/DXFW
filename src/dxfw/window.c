@@ -23,7 +23,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   // Convert caption
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
-    dxfwReportError(DXFW_UTF8_CONVERSION_ERROR);
+    dxfwReportError(DXFW_ERROR_UTF8_CONVERSION);
     return NULL;
   }
 
@@ -115,7 +115,7 @@ void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
 
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
-    dxfwReportError(DXFW_UTF8_CONVERSION_ERROR);
+    dxfwReportError(DXFW_ERROR_UTF8_CONVERSION);
     return;
   }
 

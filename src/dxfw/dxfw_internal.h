@@ -15,16 +15,16 @@
 extern bool g_initialized_;
 
 /* MACROS */
-#define DXFW_CHECK_IF_INITIALIZED()             \
-    if (!g_initialized_) {                      \
-        dxfwReportError(DXFW_NOT_INITIALIZED);  \
-        return;                                 \
+#define DXFW_CHECK_IF_INITIALIZED()                   \
+    if (!g_initialized_) {                            \
+        dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
+        return;                                       \
     }
 
-#define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x) \
-    if (!g_initialized_) {                      \
-        dxfwReportError(DXFW_NOT_INITIALIZED);  \
-        return x;                               \
+#define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x)       \
+    if (!g_initialized_) {                            \
+        dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
+        return x;                                     \
     }
 
 /* STRUCTS */

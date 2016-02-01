@@ -4,6 +4,7 @@ void errorCallbackMock(dxfwError error) {
   check_expected(error);
 }
 
+/*
 int dxfwTestSetup(void **state) {
   int mock_setup_error = dxfwTestsMocksSetup();
   if (mock_setup_error) {
@@ -31,7 +32,19 @@ int dxfwTestTeardown(void **state) {
 
   return 0;
 }
+*/
 
+/* MOCKS */
+void* dxfwMallocMock(size_t size) {
+  check_expected(size);
+  return malloc(size);
+}
+
+void dxfwFreeMock(void* ptr) {
+  check_expected(ptr);
+}
+
+/* TESTS */
 void dxfwSetupAnyWmCreateExpectations() {
   expect_any(RegisterRawInputDevices, pRawInputDevices);
   expect_any(RegisterRawInputDevices, uiNumDevices);
@@ -60,31 +73,50 @@ void dxfwSetupAnyWindowCreateExpectations() {
 }
 
 void dxfwInitTest(void **state) {
+  dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
+
   assert_true(dxfwInitialize());
   dxfwTerminate();
+
+  dxfwSetErrorCallback(NULL);
 }
 
 void dxfwDoubleInitTest(void **state) {
+  dxfwSetErrorCallback(errorCallbackMock);
   assert_true(dxfwInitialize());
+
+  expect_value(errorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
   assert_false(dxfwInitialize());
+
   dxfwTerminate();
+  dxfwSetErrorCallback(NULL);
 }
 
 void dxfwNoInitTest(void **state) {
+  dxfwSetErrorCallback(errorCallbackMock);
+
+  expect_value(errorCallbackMock, error, DXFW_ERROR_NOT_INITIALIZED);
   dxfwTerminate();
+
+  dxfwSetErrorCallback(NULL);
 }
 
-void* dxfwMallocMock(size_t size) {
-  check_expected(size);
-  return malloc(size);
-}
+void dxfwSettingMemoryAfterInitTest(void **state) {
+  dxfwSetErrorCallback(errorCallbackMock);
 
-void dxfwFreeMock(void* ptr) {
-  check_expected(ptr);
+  assert_true(dxfwInitialize());
+
+  expect_value(errorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
+  dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
+
+  dxfwTerminate();
+  dxfwSetErrorCallback(NULL);
 }
 
 void dxfwMemoryTest(void **state) {
+  dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
+  assert_true(dxfwInitialize());
 
   dxfwSetupAnyWindowCreateExpectations();
 
@@ -94,4 +126,7 @@ void dxfwMemoryTest(void **state) {
 
   expect_value(dxfwFreeMock, ptr, (void*)w);
   dxfwDestroyWindow(w);  // Should deallocate
+
+  dxfwTerminate();
+  dxfwSetErrorCallback(NULL);
 }

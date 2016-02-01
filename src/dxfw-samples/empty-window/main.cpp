@@ -2,9 +2,9 @@
 
 void errorCallback(dxfwError error) {
   switch(error) {
-   case DXFW_NO_ERROR: break;
-   case DXFW_UTF8_CONVERSION_ERROR: break;
-   case DXFW_MAX_ERRORS: break;
+   case DXFW_ERROR_NONE: break;
+   case DXFW_ERROR_UTF8_CONVERSION: break;
+   case DXFW_ERROR_MAX: break;
    default: break;
   }
 }

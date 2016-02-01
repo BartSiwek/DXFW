@@ -13,7 +13,11 @@ dxfw_on_error g_error_callback_ = NULL;
 
 /* MEMORY MANAGEMENT */
 void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
-  DXFW_CHECK_IF_INITIALIZED();
+  // This function should be set before initialization as that may allocate memory
+  if (g_initialized_) {
+    dxfwReportError(DXFW_ERROR_ALREADY_INITIALIZED);
+    return;
+  }
 
   g_alloc_ = alloc;
   g_dealloc_ = dealloc;
@@ -61,6 +65,7 @@ void dxfwInitializeTimer() {
 /* INIT & TERMINATE */
 bool dxfwInitialize() {
   if (g_initialized_) {
+    dxfwReportError(DXFW_ERROR_ALREADY_INITIALIZED);
     return false;
   }
 
@@ -71,9 +76,7 @@ bool dxfwInitialize() {
 }
 
 void dxfwTerminate() {
-  if (!g_initialized_) {
-    return;
-  }
+  DXFW_CHECK_IF_INITIALIZED();
 
   dxfwTerminateWindowHandling();
 
@@ -82,8 +85,7 @@ void dxfwTerminate() {
 
 /* ERROR HANDLING */
 dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
-  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
-
+  // Allow this callback to be set even if not initialized
   dxfw_on_error prev = g_error_callback_;
   g_error_callback_ = callback;
   return prev;

@@ -8,6 +8,9 @@ set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw-tests")
 set(PROJECT_SRCS
   ${PROJECT_SOURCE_DIR}/dxfw-tests.h
   ${PROJECT_SOURCE_DIR}/dxfw-tests.c
+  ${PROJECT_SOURCE_DIR}/window-tests.c
+  ${PROJECT_SOURCE_DIR}/keyboard-tests.c
+  ${PROJECT_SOURCE_DIR}/event-manager-tests.c
   ${PROJECT_SOURCE_DIR}/mocks.c
   ${PROJECT_SOURCE_DIR}/main.c
 )
