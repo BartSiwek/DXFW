@@ -11,41 +11,7 @@
 
 #include "dxfw/dxfw.h"
 
-/* GLOBAL VARIABLES */
-extern bool g_initialized_;
-
-/* MACROS */
-#define DXFW_CHECK_IF_INITIALIZED()                   \
-    if (!g_initialized_) {                            \
-        dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
-        return;                                       \
-    }
-
-#define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x)       \
-    if (!g_initialized_) {                            \
-        dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
-        return x;                                     \
-    }
-
-/* STRUCTS */
-struct dxfwWindow {
-  // Settings
-  bool m_should_close_;
-
-  // Events
-  dxfw_on_should_close_changed m_on_should_close_changed_;
-  dxfw_on_mouse_button m_on_mouse_button_;
-  dxfw_on_mouse_move m_on_mouse_move_;
-  dxfw_on_mouse_wheel m_on_mouse_wheel_;
-  dxfw_on_keyboard m_on_keyboard_;
-
-  // OS Specific stuff
-  HWND m_handle_;
-  DWORD m_style_;
-
-  // List pointer
-  struct dxfwWindow* m_next_;
-};
+#include "dxfw-internal-structs.h"
 
 /* MEMORY MANAGEMENT - INTERNAL */
 void* dxfwAlloc(size_t size);

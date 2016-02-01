@@ -130,3 +130,5 @@ void dxfwMemoryTest(void **state) {
   dxfwTerminate();
   dxfwSetErrorCallback(NULL);
 }
+
+// double dxfwGetTime();

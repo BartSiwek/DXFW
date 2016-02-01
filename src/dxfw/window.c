@@ -1,5 +1,6 @@
 #include "dxfw/dxfw.h"
-#include "dxfw_internal.h"
+#include "dxfw-internal-macros.h"
+#include "dxfw-internal.h"
 
 /* FORWARDS */
 LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

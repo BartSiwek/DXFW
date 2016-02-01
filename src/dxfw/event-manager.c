@@ -1,5 +1,8 @@
 #include "dxfw/dxfw.h"
-#include "dxfw_internal.h"
+#include "dxfw-internal-macros.h"
+#include "dxfw-internal.h"
+
+/* ERROR EVENT */
 
 /* SHOULD CLOSE EVENT */
 dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback) {

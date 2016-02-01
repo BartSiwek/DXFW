@@ -1,5 +1,6 @@
 #include "dxfw/dxfw.h"
-#include "dxfw_internal.h"
+#include "dxfw-internal-macros.h"
+#include "dxfw-internal.h"
 
 #include <stdlib.h>
 
