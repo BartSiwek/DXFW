@@ -2,7 +2,9 @@
 #include "dxfw-internal-macros.h"
 #include "dxfw-internal.h"
 
-/* KEY TRANSLATION TABLE */
+/***************************************/
+/*                GLOBALS              */
+/***************************************/
 dxfwVirtualKeyCode g_windows_to_virtual_key_code_[256] = {
   /* 0x00, NONE */ DXFW_KEY_NONE,
   /* 0x01, LEFT_MOUSE_BUTTON */ DXFW_KEY_NONE,
@@ -262,11 +264,12 @@ dxfwVirtualKeyCode g_windows_to_virtual_key_code_[256] = {
   /* 0xFF, Reserved */ DXFW_KEY_NONE,
 };
 
-/* GLOBAL KEYBOARD STATE */
 dxfwVirtualKeyState g_keyboard_state_[DXFW_KEY_COUNT] = { DXFW_KEY_STATE_UP };
 dxfwVirtualKeyState g_keyboard_previous_state_[DXFW_KEY_COUNT] = { DXFW_KEY_STATE_UP };
 
-/* KEYBOARD FUNCTIONS */
+/***************************************/
+/*           PUBLIC INTERFACE          */
+/***************************************/
 dxfwVirtualKeyState dxfwGetKeyState(dxfwVirtualKeyCode key_code) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(DXFW_KEY_NONE);
   return g_keyboard_state_[key_code];
@@ -292,7 +295,9 @@ dxfwVirtualKeyModifiers dxfwGetModifierFlags() {
   return (dxfwVirtualKeyModifiers)modifier_flags;
 }
 
-/* KEYBOARD FUNCTIONS - INTERNAL */
+/***************************************/
+/*             INTERNALS               */
+/***************************************/
 dxfwVirtualKeyCode dxfwGetKeyCode(USHORT windows_key_code) {
   return g_windows_to_virtual_key_code_[windows_key_code];
 }

@@ -2,22 +2,14 @@
 #include "dxfw-internal-macros.h"
 #include "dxfw-internal.h"
 
-/* GLOBALS */
-struct dxfwWindow* g_head_ = NULL;
-
-/* FORWARDS */
+/***************************************/
+/*               FORWARDS              */
+/***************************************/
 LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-/* INIT & TERMINATE - INTERNAL */
-void dxfwTerminateWindowHandling() {
-  while (g_head_ != NULL) {
-    struct dxfwWindow* current = g_head_;
-    g_head_ = g_head_->m_next_;
-    dxfwDealloc(current);
-  }
-}
-
-/* WINDOW MANAGEMENT */
+/***************************************/
+/*           PUBLIC INTERFACE          */
+/***************************************/
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
 
@@ -86,8 +78,8 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   window->m_handle_ = handle;
   window->m_style_ = style;
 
-  window->m_next_ = g_head_;
-  g_head_ = window;
+  window->m_next_ = g_state_.windows_head;
+  g_state_.windows_head = window;
 
   // Show window
   ShowWindow(handle, SW_SHOWNORMAL);
@@ -100,17 +92,17 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 void dxfwDestroyWindow(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED();
 
-  struct dxfwWindow** current = &g_head_;
+  struct dxfwWindow** current = &g_state_.windows_head;
   while(*current != NULL && *current != window) {
     current = &(*current)->m_next_;
   }
   if(*current != NULL) {
+    DestroyWindow((*current)->m_handle_);
     *current = window->m_next_;
   }
   dxfwDealloc(window);
 }
 
-/* WINDOW STATE */
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED();
 
@@ -161,7 +153,6 @@ bool dxfwShouldWindowClose(struct dxfwWindow* window) {
   return window->m_should_close_;
 }
 
-/* EVENT MANEGEMENT */
 void dxfwPollOsEvents() {
   MSG msg;
 
@@ -174,16 +165,28 @@ void dxfwPollOsEvents() {
   }
 }
 
-/* WINDOW MANAGEMENT - INTERNAL */
+/***************************************/
+/*             INTERNALS               */
+/***************************************/
+void dxfwTerminateWindowHandling() {
+  while (g_state_.windows_head != NULL) {
+    struct dxfwWindow* current = g_state_.windows_head;
+    g_state_.windows_head = g_state_.windows_head->m_next_;
+    dxfwDealloc(current);
+  }
+}
+
 struct dxfwWindow* dxfwFindWindow(HWND hwnd) {
-  struct dxfwWindow* ptr = g_head_;
+  struct dxfwWindow* ptr = g_state_.windows_head;
   while (ptr != NULL && ptr->m_handle_ != hwnd) {
     ptr = ptr->m_next_;
   }
   return ptr;
 }
 
-/* WINDOW OS INTERNALS */
+/***************************************/
+/*           OS INTERNALS              */
+/***************************************/
 LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   switch (msg) {
     case WM_CREATE: {

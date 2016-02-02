@@ -72,6 +72,18 @@ void dxfwTestsAddWindow(HWND hwnd, WNDPROC window_procedure) {
   }
 }
 
+void dxfwTestsRemoveWindow(HWND hwnd) {
+  struct dxfwMockWindow** current = &g_mock_window_head_;
+  while (*current != NULL && (*current)->m_hwnd_ != hwnd) {
+    current = &(*current)->m_next_;
+  }
+  if (*current != NULL) {
+    struct dxfwMockWindow* window = *current;
+    *current = window->m_next_;
+    free(window);
+  }
+}
+
 void dxfwTestsClearWindows() {
   struct dxfwMockWindow* ptr = g_mock_window_head_;
   while (ptr != NULL) {
@@ -146,6 +158,12 @@ WINUSERAPI HWND WINAPI CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCT
   (*mock_window_class->m_wnd_proc_)(hwnd, WM_CREATE, 0, 0);
 
   return hwnd;
+}
+
+WINUSERAPI BOOL WINAPI DestroyWindow(HWND hWnd) {
+  check_expected(hWnd);
+  dxfwTestsRemoveWindow(hWnd);
+  return (BOOL)mock();
 }
 
 WINUSERAPI BOOL WINAPI ShowWindow(HWND hWnd, int nCmdShow) {

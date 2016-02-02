@@ -15,7 +15,8 @@ struct dxfwState g_state_ = {
     .error_callback = NULL
   },
   .timer_resolution = 1.0,
-  .timer_start = 0
+  .timer_start = 0,
+  .windows_head = NULL
 };
 
 /***************************************/

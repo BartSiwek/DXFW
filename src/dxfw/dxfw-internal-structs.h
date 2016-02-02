@@ -44,6 +44,8 @@ struct dxfwState {
 
   double timer_resolution;
   int64_t timer_start;
+
+  struct dxfwWindow* windows_head;
 };
 
 /* GLOBAL VARIABLES */

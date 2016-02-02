@@ -52,8 +52,8 @@ void dxfwSetupAnyWmCreateExpectations() {
   will_return(RegisterRawInputDevices, TRUE);
 }
 
-void dxfwSetupAnyWindowCreateExpectations() {
-  will_return(CreateWindowExW, (HWND)1);
+void dxfwSetupAnyWindowCreateExpectations(int id) {
+  will_return(CreateWindowExW, (HWND)id);
 
   dxfwSetupAnyWmCreateExpectations();
 
@@ -70,6 +70,11 @@ void dxfwSetupAnyWindowCreateExpectations() {
 
   expect_any(UpdateWindow, hWnd);
   will_return(UpdateWindow, TRUE);
+}
+
+dxfwSetupAnyWindowDestroyExpectations(int id) {
+  expect_value(DestroyWindow, hWnd, (HWND)id);
+  will_return(DestroyWindow, TRUE);
 }
 
 void dxfwInitTest(void **state) {
@@ -118,11 +123,13 @@ void dxfwMemoryTest(void **state) {
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
   assert_true(dxfwInitialize());
 
-  dxfwSetupAnyWindowCreateExpectations();
+  dxfwSetupAnyWindowCreateExpectations(1);
 
   expect_any_count(dxfwMallocMock, size, 2);
   expect_any(dxfwFreeMock, ptr);
   struct dxfwWindow* w = dxfwCreateWindow(100, 100, "dxfwMemoryTest");  // Should allocate
+
+  dxfwSetupAnyWindowDestroyExpectations(1);
 
   expect_value(dxfwFreeMock, ptr, (void*)w);
   dxfwDestroyWindow(w);  // Should deallocate

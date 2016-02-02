@@ -13,29 +13,28 @@
 
 #include "dxfw-internal-structs.h"
 
-/* MEMORY MANAGEMENT - INTERNAL */
+/* MEMORY MANAGEMENT */
 void* dxfwAlloc(size_t size);
 void dxfwDealloc(void* ptr);
 
-/* HELPER FUNCTIONS - INTERNAL */
+/* HELPER FUNCTIONS */
 WCHAR* dxfwUtf8ToWchar(const char* input);
 
 /* INIT & TERMINATE */
 void dxfwTerminateWindowHandling();
 
-/* ERROR HANDLING - INTERNAL */
-void dxfwReportError(dxfwError error);
-
-/* WINDOW MANAGEMENT INTERNALS */
+/* WINDOW MANAGEMENT */
 struct dxfwWindow* dxfwFindWindow(HWND hwnd);
 
-/* WINDOW EVENT MANAGEMENT - INTERNAL */
+/* EVENT MANAGEMENT */
+void dxfwReportError(dxfwError error);
 void dxfwFireWindowClosedEvent(HWND hwnd);
 void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction action, LPARAM lparam);
 void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam);
 void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam);
 LPARAM dxfwFireKeyboardEvent(HWND hwnd, LPARAM lparam);
 
+/* KEYBOARD */
 dxfwVirtualKeyCode dxfwGetKeyCode(USHORT windows_key_code);
 void dxfwRegisterKeyDown(dxfwVirtualKeyCode key_code);
 void dxfwRegisterKeyUp(dxfwVirtualKeyCode key_code);
