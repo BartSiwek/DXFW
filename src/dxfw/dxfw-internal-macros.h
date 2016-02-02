@@ -2,13 +2,13 @@
 #define DXFW_DXFW_INTERNAL_MACROS_H_
 
 #define DXFW_CHECK_IF_INITIALIZED()                   \
-    if (!g_initialized_) {                            \
+    if (!g_state_.initialized) {                      \
         dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
         return;                                       \
     }
 
 #define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x)       \
-    if (!g_initialized_) {                            \
+    if (!g_state_.initialized) {                      \
         dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);  \
         return x;                                     \
     }

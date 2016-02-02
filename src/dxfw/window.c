@@ -2,11 +2,11 @@
 #include "dxfw-internal-macros.h"
 #include "dxfw-internal.h"
 
-/* FORWARDS */
-LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
 /* GLOBALS */
 struct dxfwWindow* g_head_ = NULL;
+
+/* FORWARDS */
+LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 /* INIT & TERMINATE - INTERNAL */
 void dxfwTerminateWindowHandling() {

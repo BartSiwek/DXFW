@@ -10,6 +10,8 @@
 
 #include "dxfw/dxfw.h"
 
+/* TYPEDEFS */
+
 /* STRUCTS */
 struct dxfwWindow {
   // Settings
@@ -30,7 +32,21 @@ struct dxfwWindow {
   struct dxfwWindow* m_next_;
 };
 
+struct dxfwState {
+  bool initialized;
+
+  dxfw_alloc_function alloc;
+  dxfw_dealloc_function dealloc;
+
+  struct {
+    dxfw_on_error error_callback;
+  } callbacks;
+
+  double timer_resolution;
+  int64_t timer_start;
+};
+
 /* GLOBAL VARIABLES */
-extern bool g_initialized_;
+extern struct dxfwState g_state_;
 
 #endif  // DXFW_DXFW_INTERNAL_STRUCTS_H_

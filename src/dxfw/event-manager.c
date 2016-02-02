@@ -2,9 +2,16 @@
 #include "dxfw-internal-macros.h"
 #include "dxfw-internal.h"
 
-/* ERROR EVENT */
+/***************************************/
+/*           PUBLIC INTERFACE          */
+/***************************************/
+dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
+  // Allow this callback to be set even if not initialized
+  dxfw_on_error prev = g_state_.callbacks.error_callback;
+  g_state_.callbacks.error_callback = callback;
+  return prev;
+}
 
-/* SHOULD CLOSE EVENT */
 dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
 
@@ -13,7 +20,6 @@ dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow
   return prev;
 }
 
-/* MOUSE EVENTS */
 dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
 
@@ -38,7 +44,6 @@ dxfw_on_mouse_wheel dxfwSetMouseWheelCallback(struct dxfwWindow* window, dxfw_on
   return prev;
 }
 
-/* KEYBOARD EVENTS */
 dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyboard callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
 
@@ -47,7 +52,15 @@ dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyb
   return prev;
 }
 
-/* WINDOW EVENT MANAGEMENT - INTERNAL */
+/***************************************/
+/*             INTERNALS               */
+/***************************************/
+void dxfwReportError(dxfwError error) {
+  if (g_state_.callbacks.error_callback != NULL) {
+    (*g_state_.callbacks.error_callback)(error);
+  }
+}
+
 void dxfwFireWindowClosedEvent(HWND hwnd) {
   struct dxfwWindow* window = dxfwFindWindow(hwnd);
   if (window != NULL) {

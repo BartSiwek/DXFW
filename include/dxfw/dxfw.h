@@ -10,9 +10,17 @@ extern "C" {
 
 #include <dxfw/enums.h>
 
-/* MEMORY MANAGEMENT */
+/* TYPEDEFS */
 typedef void*(*dxfw_alloc_function)(size_t);
 typedef void(*dxfw_dealloc_function)(void*);
+typedef void(*dxfw_on_error)(dxfwError);
+typedef void(*dxfw_on_should_close_changed)(struct dxfwWindow*, bool should_close);
+typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton button, dxfwMouseButtonAction action, int32_t x, int32_t y);
+typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int32_t x, int32_t y);
+typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int32_t x, int32_t y, int32_t delta);
+typedef void(*dxfw_on_keyboard)(struct dxfwWindow*, dxfwVirtualKeyCode key, dxfwVirtualKeyModifiers modifiers, dxfwVirtualKeyState state, dxfwVirtualKeyState previous_state);
+
+/* MEMORY MANAGEMENT */
 void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
 
 /* INIT & TERMINATE */
@@ -20,7 +28,6 @@ bool dxfwInitialize();
 void dxfwTerminate();
 
 /* ERROR HANDLING */
-typedef void(*dxfw_on_error)(dxfwError);
 dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback);
 
 /* TIME MANAGEMENT */
@@ -40,25 +47,17 @@ bool dxfwShouldWindowClose(struct dxfwWindow* window);
 void dxfwPollOsEvents();
 
 /* SHOULD CLOSE EVENT */
-typedef void(*dxfw_on_should_close_changed)(struct dxfwWindow*, bool should_close);
 dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback);
 
 /* MOUSE EVENTS */
-typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton button, dxfwMouseButtonAction action, int32_t x, int32_t y);
 dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback);
-
-typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int32_t x, int32_t y);
 dxfw_on_mouse_move dxfwSetMouseMoveCallback(struct dxfwWindow* window, dxfw_on_mouse_move callback);
-
-typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int32_t x, int32_t y, int32_t delta);
 dxfw_on_mouse_wheel dxfwSetMouseWheelCallback(struct dxfwWindow* window, dxfw_on_mouse_wheel callback);
 
 /* KEYBOARD EVENTS */
 dxfwVirtualKeyState dxfwGetKeyState(dxfwVirtualKeyCode key_code);
 dxfwVirtualKeyState dxfwGetPreviousKeyState(dxfwVirtualKeyCode key_code);
 dxfwVirtualKeyModifiers dxfwGetModifierFlags();
-
-typedef void(*dxfw_on_keyboard)(struct dxfwWindow*, dxfwVirtualKeyCode key, dxfwVirtualKeyModifiers modifiers, dxfwVirtualKeyState state, dxfwVirtualKeyState previous_state);
 dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyboard callback);
 
 #ifdef __cplusplus
