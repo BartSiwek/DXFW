@@ -13,6 +13,12 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
 
+  // Check if size makes sense
+  if (width == 0 || height == 0) {
+    dxfwReportError(DXFW_ERROR_INVALID_WINDOW_SIZE);
+    return NULL;
+  }
+
   // Convert caption
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {

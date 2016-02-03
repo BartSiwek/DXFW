@@ -131,12 +131,12 @@ WINUSERAPI BOOL WINAPI TranslateMessage(CONST MSG *lpMsg) {
   return TRUE;
 }
 
-WINUSERAPI LRESULT WINAPI DispatchMessage(CONST MSG *lpmsg) {
+WINUSERAPI LRESULT WINAPI DispatchMessageW(CONST MSG *lpmsg) {
   struct dxfwMockWindow* mock_window = dxfwTestsGetWindow(lpmsg->hwnd);
   return (*mock_window->m_window_procedure_)(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
 }
 
-WINUSERAPI LRESULT WINAPI DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
+WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
   check_expected(hWnd);
   check_expected(Msg);
   check_expected(wParam);
@@ -145,14 +145,14 @@ WINUSERAPI LRESULT WINAPI DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
   return (LRESULT)mock();
 }
 
-WINUSERAPI ATOM WINAPI RegisterClassEx(CONST WNDCLASSEXW* lpwcx) {
+WINUSERAPI ATOM WINAPI RegisterClassExW(CONST WNDCLASSEXW* lpwcx) {
   dxfwTestsAddWindowClass(lpwcx);
   return 0;
 }
 
-WINUSERAPI HWND WINAPI CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
-                                      int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu,
-                                      HINSTANCE hInstance, LPVOID lpParam) {
+WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
+                                       int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu,
+                                       HINSTANCE hInstance, LPVOID lpParam) {
   check_expected(lpWindowName);
   check_expected(x);
   check_expected(y);
@@ -199,7 +199,7 @@ WINUSERAPI BOOL WINAPI UpdateWindow(HWND hWnd) {
   return (BOOL)mock();
 }
 
-WINUSERAPI BOOL WINAPI SetWindowText(HWND hWnd, LPCTSTR lpString) {
+WINUSERAPI BOOL WINAPI SetWindowTextW(HWND hWnd, LPCTSTR lpString) {
   check_expected(hWnd);
   check_expected(lpString);
 
@@ -231,16 +231,16 @@ WINUSERAPI BOOL WINAPI AdjustWindowRect(LPRECT lpRect, DWORD dwStyle, BOOL bMenu
   return (BOOL)mock();
 }
 
-WINUSERAPI LONG WINAPI GetWindowLong(HWND hWnd, int nIndex) {
+WINUSERAPI LONG WINAPI GetWindowLongW(HWND hWnd, int nIndex) {
   return (BOOL)mock();
 }
 
-WINUSERAPI HCURSOR WINAPI LoadCursor(HINSTANCE hInstance, LPCTSTR lpCursorName) {
+WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCTSTR lpCursorName) {
   // Nothing
   return (HCURSOR)0;
 }
 
-WINUSERAPI HICON WINAPI LoadIcon(HINSTANCE hInstance, LPCTSTR lpIconName) {
+WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCTSTR lpIconName) {
   // Nothing
   return (HICON)0;
 }

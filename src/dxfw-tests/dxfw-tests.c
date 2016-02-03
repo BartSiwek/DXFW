@@ -12,7 +12,7 @@ void dxfwFreeMock(void* ptr) {
 
 /* TESTS */
 void dxfwInitTest(void **state) {
-  dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);  // Make sure no errors are reported
 
   assert_true(dxfwInitialize());
   dxfwTerminate();
@@ -21,10 +21,10 @@ void dxfwInitTest(void **state) {
 }
 
 void dxfwDoubleInitTest(void **state) {
-  dxfwSetErrorCallback(errorCallbackMock);
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);
   assert_true(dxfwInitialize());
 
-  expect_value(errorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
   assert_false(dxfwInitialize());
 
   dxfwTerminate();
@@ -32,20 +32,20 @@ void dxfwDoubleInitTest(void **state) {
 }
 
 void dxfwNoInitTest(void **state) {
-  dxfwSetErrorCallback(errorCallbackMock);
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);
 
-  expect_value(errorCallbackMock, error, DXFW_ERROR_NOT_INITIALIZED);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_NOT_INITIALIZED);
   dxfwTerminate();
 
   dxfwSetErrorCallback(NULL);
 }
 
 void dxfwSettingMemoryAfterInitTest(void **state) {
-  dxfwSetErrorCallback(errorCallbackMock);
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);
 
   assert_true(dxfwInitialize());
 
-  expect_value(errorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_ALREADY_INITIALIZED);
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
 
   dxfwTerminate();
@@ -55,7 +55,7 @@ void dxfwSettingMemoryAfterInitTest(void **state) {
 void dxfwMemoryTest(void **state) {
   assert_int_equal(0, dxfwTestsOsMocksSetup());
 
-  dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);  // Make sure no errors are reported
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
   assert_true(dxfwInitialize());
 

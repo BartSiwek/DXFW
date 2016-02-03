@@ -26,7 +26,7 @@ int dxfwTestSetup(void **state);
 int dxfwTestTeardown(void **state);
 
 /* MOCKS */
-void errorCallbackMock(dxfwError error);
+void dxfwTestErrorCallbackMock(dxfwError error);
 
 /* SETUP & TEARDOWN - OS */
 int dxfwTestsOsMocksSetup();
@@ -40,5 +40,11 @@ void dxfwMemoryTest(void **state);
 void dxfwGetTimeTest(void **state);
 
 void dxfwCreateDestroyWindowTest(void **state);
+void dxfwCreateWindowWithZeroWidthTest(void** state);
+void dxfwCreateWindowWithZeroHeightTest(void** state);
+void dxfwCreateWindowWithEmptyTitleTest(void** state);
+
+void dxfwSetWindowCaptionTest(void** state);
+void dxfwSetEmptyWindowCaptionTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

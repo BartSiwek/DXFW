@@ -60,7 +60,7 @@ int dxfwTestSetup(void **state) {
     return 1;
   }
 
-  dxfwSetErrorCallback(errorCallbackMock);
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);
 
   return 0;
 }
@@ -78,6 +78,6 @@ int dxfwTestTeardown(void **state) {
 }
 
 /* MOCKS */
-void errorCallbackMock(dxfwError error) {
+void dxfwTestErrorCallbackMock(dxfwError error) {
   check_expected(error);
 }
