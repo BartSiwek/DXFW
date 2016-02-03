@@ -12,6 +12,7 @@ set(PROJECT_SRCS
   ${PROJECT_SOURCE_DIR}/keyboard-tests.c
   ${PROJECT_SOURCE_DIR}/event-manager-tests.c
   ${PROJECT_SOURCE_DIR}/mocks.c
+  ${PROJECT_SOURCE_DIR}/os-mocks.c
   ${PROJECT_SOURCE_DIR}/main.c
 )
 

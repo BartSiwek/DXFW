@@ -15,19 +15,30 @@
 
 #include <dxfw/dxfw.h>
 
-int dxfwTestsMocksSetup();
-int dxfwTestsMocksTeardown();
+/* TEST HELPERS */
+void dxfwSetupAnyWmCreateExpectations();
+void dxfwSetupAnyWindowCreateExpectations(int id);
+dxfwSetupAnyWindowDestroyExpectations(int id);
+wchar_t* dxfwTestsUtf8ToWchar(const char* utf8);
 
-void errorCallbackMock(dxfwError error);
+/* SETUP & TEARDOWN */
 int dxfwTestSetup(void **state);
 int dxfwTestTeardown(void **state);
 
-void dxfwSetupAnyWindowCreateExpectations();
-void dxfwSetupAnyWmCreateExpectations();
+/* MOCKS */
+void errorCallbackMock(dxfwError error);
 
+/* SETUP & TEARDOWN - OS */
+int dxfwTestsOsMocksSetup();
+int dxfwTestsOsMocksTeardown();
+
+/* TESTS */
 void dxfwInitTest(void **state);
 void dxfwDoubleInitTest(void **state);
 void dxfwNoInitTest(void **state);
 void dxfwMemoryTest(void **state);
+void dxfwGetTimeTest(void **state);
+
+void dxfwCreateDestroyWindowTest(void **state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

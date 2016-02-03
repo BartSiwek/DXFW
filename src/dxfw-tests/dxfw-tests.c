@@ -1,39 +1,5 @@
 #include "dxfw-tests.h"
 
-void errorCallbackMock(dxfwError error) {
-  check_expected(error);
-}
-
-/*
-int dxfwTestSetup(void **state) {
-  int mock_setup_error = dxfwTestsMocksSetup();
-  if (mock_setup_error) {
-    return 1;
-  }
-
-  bool initialize_ok = dxfwInitialize();
-  if (!initialize_ok) {
-    return 1;
-  }
-
-  dxfwSetErrorCallback(errorCallbackMock);
-
-  return 0;
-}
-
-int dxfwTestTeardown(void **state) {
-  dxfwSetErrorCallback(NULL);
-  dxfwTerminate();
-
-  int mock_teardown_error = dxfwTestsMocksTeardown();
-  if (mock_teardown_error) {
-    return 1;
-  }
-
-  return 0;
-}
-*/
-
 /* MOCKS */
 void* dxfwMallocMock(size_t size) {
   check_expected(size);
@@ -45,38 +11,6 @@ void dxfwFreeMock(void* ptr) {
 }
 
 /* TESTS */
-void dxfwSetupAnyWmCreateExpectations() {
-  expect_any(RegisterRawInputDevices, pRawInputDevices);
-  expect_any(RegisterRawInputDevices, uiNumDevices);
-  expect_any(RegisterRawInputDevices, cbSize);
-  will_return(RegisterRawInputDevices, TRUE);
-}
-
-void dxfwSetupAnyWindowCreateExpectations(int id) {
-  will_return(CreateWindowExW, (HWND)id);
-
-  dxfwSetupAnyWmCreateExpectations();
-
-  RECT r = { 0, 0, 107, 107 };
-  expect_any(AdjustWindowRect, lpRect);
-  expect_any(AdjustWindowRect, dwStyle);
-  expect_any(AdjustWindowRect, bMenu);
-  will_return(AdjustWindowRect, &r);
-  will_return(AdjustWindowRect, TRUE);
-
-  expect_any(ShowWindow, hWnd);
-  expect_any(ShowWindow, nCmdShow);
-  will_return(ShowWindow, TRUE);
-
-  expect_any(UpdateWindow, hWnd);
-  will_return(UpdateWindow, TRUE);
-}
-
-dxfwSetupAnyWindowDestroyExpectations(int id) {
-  expect_value(DestroyWindow, hWnd, (HWND)id);
-  will_return(DestroyWindow, TRUE);
-}
-
 void dxfwInitTest(void **state) {
   dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
 
@@ -119,6 +53,8 @@ void dxfwSettingMemoryAfterInitTest(void **state) {
 }
 
 void dxfwMemoryTest(void **state) {
+  assert_int_equal(0, dxfwTestsOsMocksSetup());
+
   dxfwSetErrorCallback(errorCallbackMock);  // Make sure no errors are reported
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
   assert_true(dxfwInitialize());
@@ -135,7 +71,19 @@ void dxfwMemoryTest(void **state) {
   dxfwDestroyWindow(w);  // Should deallocate
 
   dxfwTerminate();
+  dxfwSetAlloc(malloc, free);
   dxfwSetErrorCallback(NULL);
+
+  assert_int_equal(0, dxfwTestsOsMocksTeardown());
 }
 
-// double dxfwGetTime();
+void dxfwGetTimeTest(void **state) {
+  double timestamp1 = dxfwGetTime();
+  Sleep(10);
+  double timestamp2 = dxfwGetTime();
+  Sleep(20);
+  double timestamp3 = dxfwGetTime();
+
+  assert_true(timestamp2 - timestamp1 > 0.01);
+  assert_true(timestamp3 - timestamp2 > 0.02);
+}
