@@ -18,7 +18,7 @@
 /* TEST HELPERS */
 void dxfwSetupAnyWmCreateExpectations();
 void dxfwSetupAnyWindowCreateExpectations(int id);
-dxfwSetupAnyWindowDestroyExpectations(int id);
+void dxfwSetupWindowDestroyExpectations(int id);
 wchar_t* dxfwTestsUtf8ToWchar(const char* utf8);
 
 /* SETUP & TEARDOWN */
@@ -46,5 +46,7 @@ void dxfwCreateWindowWithEmptyTitleTest(void** state);
 
 void dxfwSetWindowCaptionTest(void** state);
 void dxfwSetEmptyWindowCaptionTest(void** state);
+void dxfwGetWindowSizeTest(void** state);
+void dxfwSetWindowSizeTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

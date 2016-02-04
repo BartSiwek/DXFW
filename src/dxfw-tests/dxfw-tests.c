@@ -65,7 +65,7 @@ void dxfwMemoryTest(void **state) {
   expect_any(dxfwFreeMock, ptr);
   struct dxfwWindow* w = dxfwCreateWindow(100, 100, "dxfwMemoryTest");  // Should allocate
 
-  dxfwSetupAnyWindowDestroyExpectations(1);
+  dxfwSetupWindowDestroyExpectations(1);
 
   expect_value(dxfwFreeMock, ptr, (void*)w);
   dxfwDestroyWindow(w);  // Should deallocate

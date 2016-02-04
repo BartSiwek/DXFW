@@ -13,6 +13,8 @@ int main() {
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithEmptyTitleTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetEmptyWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwGetWindowSizeTest, dxfwTestSetup, dxfwTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeTest, dxfwTestSetup, dxfwTestTeardown),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

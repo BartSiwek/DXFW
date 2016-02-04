@@ -36,7 +36,7 @@ void dxfwSetupAnyWindowCreateExpectations(int id) {
   will_return(UpdateWindow, TRUE);
 }
 
-dxfwSetupAnyWindowDestroyExpectations(int id) {
+void dxfwSetupWindowDestroyExpectations(int id) {
   expect_value(DestroyWindow, hWnd, (HWND)id);
   will_return(DestroyWindow, TRUE);
 }

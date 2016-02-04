@@ -208,7 +208,10 @@ WINUSERAPI BOOL WINAPI SetWindowTextW(HWND hWnd, LPCTSTR lpString) {
 
 WINUSERAPI BOOL WINAPI GetClientRect(HWND hWnd, LPRECT lpRect) {
   check_expected(hWnd);
-  lpRect = mock_ptr_type(LPRECT);
+  lpRect->left = (LONG)mock();
+  lpRect->top = (LONG)mock();
+  lpRect->right = (LONG)mock();
+  lpRect->bottom = (LONG)mock();
 
   return (BOOL)mock();
 }
@@ -232,7 +235,9 @@ WINUSERAPI BOOL WINAPI AdjustWindowRect(LPRECT lpRect, DWORD dwStyle, BOOL bMenu
 }
 
 WINUSERAPI LONG WINAPI GetWindowLongW(HWND hWnd, int nIndex) {
-  return (BOOL)mock();
+  check_expected(hWnd);
+  check_expected(nIndex);
+  return (LONG)mock();
 }
 
 WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCTSTR lpCursorName) {
