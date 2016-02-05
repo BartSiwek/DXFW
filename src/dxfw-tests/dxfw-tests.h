@@ -48,5 +48,9 @@ void dxfwSetWindowCaptionTest(void** state);
 void dxfwSetEmptyWindowCaptionTest(void** state);
 void dxfwGetWindowSizeTest(void** state);
 void dxfwSetWindowSizeTest(void** state);
+void dxfwSetWindowSizeToZeroWidthTest(void** state);
+void dxfwSetWindowSizeToZeroHeightTest(void** state);
+void dxfwShouldWindowCloseTest(void** state);
+void dxfwPollOsEventsTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

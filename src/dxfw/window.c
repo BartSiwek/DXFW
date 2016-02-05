@@ -135,6 +135,11 @@ void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* hei
 void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height) {
   DXFW_CHECK_IF_INITIALIZED();
 
+  if (width == 0 || height == 0) {
+    dxfwReportError(DXFW_ERROR_INVALID_WINDOW_SIZE);
+    return;
+  }
+
   // Get the current pos
   RECT r;
   GetClientRect(window->m_handle_, &r);

@@ -116,7 +116,13 @@ int dxfwTestsOsMocksTeardown() {
 
 /* Windows OS mocks */
 WINUSERAPI BOOL WINAPI PeekMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg) {
-  lpMsg = mock_ptr_type(LPMSG);
+  lpMsg->hwnd = (HWND)mock();
+  lpMsg->message = (UINT)mock();
+  lpMsg->lParam = (LPARAM)mock();
+  lpMsg->wParam = (WPARAM)mock();
+  lpMsg->time = (DWORD)mock();
+  lpMsg->pt.x = (LONG)mock();
+  lpMsg->pt.y = (LONG)mock();
 
   (void)hWnd;
   (void)wMsgFilterMin;
@@ -133,7 +139,8 @@ WINUSERAPI BOOL WINAPI TranslateMessage(CONST MSG *lpMsg) {
 
 WINUSERAPI LRESULT WINAPI DispatchMessageW(CONST MSG *lpmsg) {
   struct dxfwMockWindow* mock_window = dxfwTestsGetWindow(lpmsg->hwnd);
-  return (*mock_window->m_window_procedure_)(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+  assert_non_null(mock_window);
+  return (*mock_window->m_window_procedure_)(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam); 
 }
 
 WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {

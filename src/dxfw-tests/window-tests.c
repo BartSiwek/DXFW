@@ -43,6 +43,12 @@ void dxfwTestsRunSuccessfulWindowCreationTest(int id, uint32_t width, uint32_t h
   free(title_wide);
 }
 
+/* MOCKS */
+void dxfwTestOnShouldCloseCallbackMock(struct dxfwWindow* window, bool should_close) {
+  check_expected(window);
+  check_expected(should_close);
+}
+
 /* TESTS */
 void dxfwCreateDestroyWindowTest(void** state) {
   // Test const
@@ -154,6 +160,9 @@ void dxfwGetWindowSizeTest(void** state) {
   uint32_t height;
   dxfwGetWindowSize(w, &width, &height);
 
+  assert_int_equal(client_rect.right - client_rect.left, width);
+  assert_int_equal(client_rect.bottom - client_rect.top, height);
+
   // Destroy
   dxfwSetupWindowDestroyExpectations(WINDOW_ID);
   dxfwDestroyWindow(w);
@@ -229,8 +238,119 @@ void dxfwSetWindowSizeTest(void** state) {
   free(title_wide);
 }
 
+void dxfwSetWindowSizeToZeroWidthTest(void** state) {
+  // Test const
+  const int WINDOW_ID = 12;
+  const uint32_t WINDOW_WIDTH = 112;
+  const uint32_t WINDOW_HEIGHT = 212;
+  const char* WINDOW_NAME = "dxfwSetWindowSizeTest";
+  const uint32_t NEW_WINDOW_WIDTH = 0;
+  const uint32_t NEW_WINDOW_HEIGHT = 412;
 
+  // Create
+  wchar_t* title_wide = dxfwTestsUtf8ToWchar(WINDOW_NAME);
+  dxfwSetupWindowCreateExpectations(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, title_wide);
+  struct dxfwWindow* w = dxfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 
-// void dxfwPollOsEvents();
-// bool dxfwShouldWindowClose(struct dxfwWindow* window);
-// dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_WINDOW_SIZE);
+
+  dxfwSetWindowSize(w, NEW_WINDOW_WIDTH, NEW_WINDOW_HEIGHT);
+
+  // Destroy
+  dxfwSetupWindowDestroyExpectations(WINDOW_ID);
+  dxfwDestroyWindow(w);
+
+  // Clean up
+  free(title_wide);
+}
+
+void dxfwSetWindowSizeToZeroHeightTest(void** state) {
+  // Test const
+  const int WINDOW_ID = 13;
+  const uint32_t WINDOW_WIDTH = 113;
+  const uint32_t WINDOW_HEIGHT = 213;
+  const char* WINDOW_NAME = "dxfwSetWindowSizeToZeroHeightTest";
+  const uint32_t NEW_WINDOW_WIDTH = 313;
+  const uint32_t NEW_WINDOW_HEIGHT = 0;
+
+  // Create
+  wchar_t* title_wide = dxfwTestsUtf8ToWchar(WINDOW_NAME);
+  dxfwSetupWindowCreateExpectations(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, title_wide);
+  struct dxfwWindow* w = dxfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_WINDOW_SIZE);
+
+  dxfwSetWindowSize(w, NEW_WINDOW_WIDTH, NEW_WINDOW_HEIGHT);
+
+  // Destroy
+  dxfwSetupWindowDestroyExpectations(WINDOW_ID);
+  dxfwDestroyWindow(w);
+
+  // Clean up
+  free(title_wide);
+}
+
+void dxfwShouldWindowCloseTest(void** state) {
+  // Test const
+  const int WINDOW_ID = 14;
+  const uint32_t WINDOW_WIDTH = 114;
+  const uint32_t WINDOW_HEIGHT = 214;
+  const char* WINDOW_NAME = "dxfwShouldWindowCloseTest";
+  const UINT MESSAGE = WM_CLOSE;
+  const LPARAM LPARAM_VALUE = 0;
+  const WPARAM WPARAM_VALUE = 0;
+
+  // Create
+  wchar_t* title_wide = dxfwTestsUtf8ToWchar(WINDOW_NAME);
+  dxfwSetupWindowCreateExpectations(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, title_wide);
+  struct dxfwWindow* w = dxfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+
+  // Tets if we should close
+  assert_false(dxfwShouldWindowClose(w));
+
+  // Set callback
+  assert_null(dxfwSetShouldCloseChangedCallback(w, dxfwTestOnShouldCloseCallbackMock));
+  expect_value(dxfwTestOnShouldCloseCallbackMock, window, w);
+  expect_value(dxfwTestOnShouldCloseCallbackMock, should_close, true);
+
+  // Setup first OS message flow
+  will_return(PeekMessageW, (HWND)WINDOW_ID);
+  will_return(PeekMessageW, MESSAGE);
+  will_return(PeekMessageW, LPARAM_VALUE);
+  will_return(PeekMessageW, WPARAM_VALUE);
+  will_return(PeekMessageW, 0);  // time
+  will_return(PeekMessageW, 0);  // pt.x
+  will_return(PeekMessageW, 0);  // pt.y
+  will_return(PeekMessageW, TRUE);
+
+  expect_value(DefWindowProcW, hWnd, (HWND)WINDOW_ID);
+  expect_value(DefWindowProcW, Msg, MESSAGE);
+  expect_value(DefWindowProcW, lParam, LPARAM_VALUE);
+  expect_value(DefWindowProcW, wParam, WPARAM_VALUE);
+  will_return(DefWindowProcW, (LPARAM)0);
+
+  // Setup second OS message flow - stops
+  will_return_count(PeekMessageW, 0, 7);
+  will_return(PeekMessageW, FALSE);
+
+  // Trigger
+  dxfwPollOsEvents();
+
+  // Tets if we should close
+  assert_true(dxfwShouldWindowClose(w));
+
+  // Destroy
+  dxfwSetupWindowDestroyExpectations(WINDOW_ID);
+  dxfwDestroyWindow(w);
+
+  // Clean up
+  free(title_wide);
+}
+
+void dxfwPollOsEventsTest(void** state) {
+  // TODO - test we go to DefaultProc
+}
+
+void dxfwTwoWindowTest(void** state) {
+  // TODO - test we got two windows and we dispatch correctly
+}
