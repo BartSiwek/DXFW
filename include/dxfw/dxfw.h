@@ -15,9 +15,9 @@ typedef void*(*dxfw_alloc_function)(size_t);
 typedef void(*dxfw_dealloc_function)(void*);
 typedef void(*dxfw_on_error)(dxfwError);
 typedef void(*dxfw_on_should_close_changed)(struct dxfwWindow*, bool);
-typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton, dxfwMouseButtonAction, int32_t, int32_t);
-typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int32_t, int32_t);
-typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int32_t, int32_t, int32_t);
+typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton, dxfwMouseButtonAction, int16_t, int16_t);
+typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int16_t, int16_t);
+typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int16_t, int16_t, int16_t);
 typedef void(*dxfw_on_keyboard)(struct dxfwWindow*, dxfwVirtualKeyCode, dxfwVirtualKeyModifiers, dxfwVirtualKeyState, dxfwVirtualKeyState);
 
 /* MEMORY MANAGEMENT */

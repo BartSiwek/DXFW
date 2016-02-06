@@ -74,8 +74,8 @@ void dxfwFireWindowClosedEvent(HWND hwnd) {
 void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction action, LPARAM lparam) {
   struct dxfwWindow* window = dxfwFindWindow(hwnd);
   if (window != NULL && window->m_on_mouse_button_ != NULL) {
-    int32_t x = (0xffff & lparam);
-    int32_t y = ((0xffff0000 & lparam) >> 16);
+    int16_t x = (0xffff & lparam);
+    int16_t y = ((0xffff0000 & lparam) >> 16);
 
     (*window->m_on_mouse_button_)(window, button, action, x, y);
   }
@@ -84,8 +84,8 @@ void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction
 void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam) {
   struct dxfwWindow* window = dxfwFindWindow(hwnd);
   if (window != NULL && window->m_on_mouse_move_ != NULL) {
-    int32_t x = (0xffff & lparam);
-    int32_t y = ((0xffff0000 & lparam) >> 16);
+    int16_t x = (0xffff & lparam);
+    int16_t y = ((0xffff0000 & lparam) >> 16);
 
     (*window->m_on_mouse_move_)(window, x, y);
   }
@@ -94,9 +94,9 @@ void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam) {
 void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam) {
   struct dxfwWindow* window = dxfwFindWindow(hwnd);
   if (window != NULL && window->m_on_mouse_wheel_) {
-    int32_t x = (0xffff & lparam);
-    int32_t y = ((0xffff0000 & lparam) >> 16);
-    int32_t delta = (int32_t)((0xffff0000 & wparam) >> 16);
+    int16_t x = (0xffff & lparam);
+    int16_t y = ((0xffff0000 & lparam) >> 16);
+    int16_t delta = (int16_t)((0xffff0000 & wparam) >> 16);
 
     (*window->m_on_mouse_wheel_)(window, x, y, delta);
   }
