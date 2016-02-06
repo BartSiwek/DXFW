@@ -53,19 +53,19 @@ void dxfwSettingMemoryAfterInitTest(void **state) {
 }
 
 void dxfwMemoryTest(void **state) {
-  assert_int_equal(0, dxfwTestsOsMocksSetup());
+  assert_int_equal(0, dxfwTestOsMocksSetup());
 
   dxfwSetErrorCallback(dxfwTestErrorCallbackMock);  // Make sure no errors are reported
   dxfwSetAlloc(dxfwMallocMock, dxfwFreeMock);
   assert_true(dxfwInitialize());
 
-  dxfwSetupAnyWindowCreateExpectations(1);
+  dxfwTestSetupAnyWindowCreateExpectations(1);
 
   expect_any_count(dxfwMallocMock, size, 2);
   expect_any(dxfwFreeMock, ptr);
   struct dxfwWindow* w = dxfwCreateWindow(100, 100, "dxfwMemoryTest");  // Should allocate
 
-  dxfwSetupWindowDestroyExpectations(1);
+  dxfwTestSetupWindowDestroyExpectations(1);
 
   expect_value(dxfwFreeMock, ptr, (void*)w);
   dxfwDestroyWindow(w);  // Should deallocate
@@ -74,7 +74,7 @@ void dxfwMemoryTest(void **state) {
   dxfwSetAlloc(malloc, free);
   dxfwSetErrorCallback(NULL);
 
-  assert_int_equal(0, dxfwTestsOsMocksTeardown());
+  assert_int_equal(0, dxfwTestOsMocksTeardown());
 }
 
 void dxfwGetTimeTest(void **state) {

@@ -33,19 +33,19 @@ struct dxfwWindow {
 };
 
 struct dxfwState {
-  bool initialized;
+  bool m_initialized_;
 
-  dxfw_alloc_function alloc;
-  dxfw_dealloc_function dealloc;
+  dxfw_alloc_function m_alloc_;
+  dxfw_dealloc_function m_dealloc_;
 
   struct {
-    dxfw_on_error error_callback;
-  } callbacks;
+    dxfw_on_error m_error_callback_;
+  } m_callbacks_;
 
-  double timer_resolution;
-  int64_t timer_start;
+  double m_timer_resolution_;
+  int64_t m_timer_start_;
 
-  struct dxfwWindow* windows_head;
+  struct dxfwWindow* m_windows_head_;
 };
 
 /* GLOBAL VARIABLES */

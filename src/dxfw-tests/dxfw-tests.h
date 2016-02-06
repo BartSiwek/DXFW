@@ -15,22 +15,38 @@
 
 #include <dxfw/dxfw.h>
 
+/* STRUCTS */
+struct dxfwTestSingleWindowTestData {
+  int m_window_id_;
+  struct dxfwWindow* m_window_;
+  uint32_t m_window_width_;
+  uint32_t m_window_height_;
+  const char* m_window_name_;
+  wchar_t* m_window_name_wide_;
+};
+
 /* TEST HELPERS */
-void dxfwSetupAnyWmCreateExpectations();
-void dxfwSetupAnyWindowCreateExpectations(int id);
-void dxfwSetupWindowDestroyExpectations(int id);
-wchar_t* dxfwTestsUtf8ToWchar(const char* utf8);
+wchar_t* dxfwTestUtf8ToWchar(const char* utf8);
+void dxfwTestSetupAnyWmCreateExpectations();
+void dxfwTestSetupAnyWindowCreateExpectations(int id);
+void dxfwSetupWindowCreateExpectations(int id, uint32_t width, uint32_t height, const wchar_t* title);
+void dxfwTestSetupWindowDestroyExpectations(int id);
+void dxfwTestSetupPeekMessage(HWND hwnd, UINT msg, LPARAM lparam, WPARAM wparam);
+void dxfwTestSetupLastPeekMessage();
+void dxfwSetupDefWindowProc(HWND hwnd, UINT msg, LPARAM lparam, WPARAM wparam);
 
 /* SETUP & TEARDOWN */
 int dxfwTestSetup(void **state);
 int dxfwTestTeardown(void **state);
+int dxfwSingleWindowTestSetup(void **state);
+int dxfwSingleWindowTestTeardown(void **state);
 
 /* MOCKS */
 void dxfwTestErrorCallbackMock(dxfwError error);
 
 /* SETUP & TEARDOWN - OS */
-int dxfwTestsOsMocksSetup();
-int dxfwTestsOsMocksTeardown();
+int dxfwTestOsMocksSetup();
+int dxfwTestOsMocksTeardown();
 
 /* TESTS */
 void dxfwInitTest(void **state);
@@ -52,5 +68,9 @@ void dxfwSetWindowSizeToZeroWidthTest(void** state);
 void dxfwSetWindowSizeToZeroHeightTest(void** state);
 void dxfwShouldWindowCloseTest(void** state);
 void dxfwPollOsEventsTest(void** state);
+void dxfwTwoWindowTest(void** state);
+void dxfwGetKeyStateTest(void** state);
+void dxfwGetModifierFlagsTest(void** state);
+void dxfwKeyboardCallbackTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

@@ -84,8 +84,8 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   window->m_handle_ = handle;
   window->m_style_ = style;
 
-  window->m_next_ = g_state_.windows_head;
-  g_state_.windows_head = window;
+  window->m_next_ = g_state_.m_windows_head_;
+  g_state_.m_windows_head_ = window;
 
   // Show window
   ShowWindow(handle, SW_SHOWNORMAL);
@@ -98,7 +98,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 void dxfwDestroyWindow(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED();
 
-  struct dxfwWindow** current = &g_state_.windows_head;
+  struct dxfwWindow** current = &g_state_.m_windows_head_;
   while(*current != NULL && *current != window) {
     current = &(*current)->m_next_;
   }
@@ -180,15 +180,15 @@ void dxfwPollOsEvents() {
 /*             INTERNALS               */
 /***************************************/
 void dxfwTerminateWindowHandling() {
-  while (g_state_.windows_head != NULL) {
-    struct dxfwWindow* current = g_state_.windows_head;
-    g_state_.windows_head = g_state_.windows_head->m_next_;
+  while (g_state_.m_windows_head_ != NULL) {
+    struct dxfwWindow* current = g_state_.m_windows_head_;
+    g_state_.m_windows_head_ = g_state_.m_windows_head_->m_next_;
     dxfwDealloc(current);
   }
 }
 
 struct dxfwWindow* dxfwFindWindow(HWND hwnd) {
-  struct dxfwWindow* ptr = g_state_.windows_head;
+  struct dxfwWindow* ptr = g_state_.m_windows_head_;
   while (ptr != NULL && ptr->m_handle_ != hwnd) {
     ptr = ptr->m_next_;
   }

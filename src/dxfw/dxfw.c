@@ -8,15 +8,15 @@
 /*                GLOBALS              */
 /***************************************/
 struct dxfwState g_state_ = {
-  .initialized = false,
-  .alloc = malloc,
-  .dealloc = free,
-  .callbacks = {
-    .error_callback = NULL
+  .m_initialized_ = false,
+  .m_alloc_ = malloc,
+  .m_dealloc_ = free,
+  .m_callbacks_ = {
+    .m_error_callback_ = NULL
   },
-  .timer_resolution = 1.0,
-  .timer_start = 0,
-  .windows_head = NULL
+  .m_timer_resolution_ = 1.0,
+  .m_timer_start_ = 0,
+  .m_windows_head_ = NULL
 };
 
 /***************************************/
@@ -29,24 +29,24 @@ void dxfwInitializeTimer();
 /***************************************/
 void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
   // This function should be set before initialization as that may allocate memory
-  if (g_state_.initialized) {
+  if (g_state_.m_initialized_) {
     dxfwReportError(DXFW_ERROR_ALREADY_INITIALIZED);
     return;
   }
 
-  g_state_.alloc = alloc;
-  g_state_.dealloc = dealloc;
+  g_state_.m_alloc_ = alloc;
+  g_state_.m_dealloc_ = dealloc;
 }
 
 bool dxfwInitialize() {
-  if (g_state_.initialized) {
+  if (g_state_.m_initialized_) {
     dxfwReportError(DXFW_ERROR_ALREADY_INITIALIZED);
     return false;
   }
 
   dxfwInitializeTimer();
 
-  g_state_.initialized = true;
+  g_state_.m_initialized_ = true;
   return true;
 }
 
@@ -55,7 +55,7 @@ void dxfwTerminate() {
 
   dxfwTerminateWindowHandling();
 
-  g_state_.initialized = false;
+  g_state_.m_initialized_ = false;
 }
 
 double dxfwGetTime() {
@@ -63,28 +63,28 @@ double dxfwGetTime() {
 
   LARGE_INTEGER timestamp;
   QueryPerformanceCounter(&timestamp);
-  return (double)(timestamp.QuadPart - g_state_.timer_start) * g_state_.timer_resolution;
+  return (double)(timestamp.QuadPart - g_state_.m_timer_start_) * g_state_.m_timer_resolution_;
 }
 
 /***************************************/
 /*             INTERNALS               */
 /***************************************/
 void* dxfwAlloc(size_t size) {
-  return (*g_state_.alloc)(size);
+  return (*g_state_.m_alloc_)(size);
 }
 
 void dxfwDealloc(void* ptr) {
-  (*g_state_.dealloc)(ptr);
+  (*g_state_.m_dealloc_)(ptr);
 }
 
 void dxfwInitializeTimer() {
   LARGE_INTEGER frequency;
   QueryPerformanceFrequency(&frequency);
-  g_state_.timer_resolution = 1.0 / (double)frequency.QuadPart;
+  g_state_.m_timer_resolution_ = 1.0 / (double)frequency.QuadPart;
 
   LARGE_INTEGER timestamp;
   QueryPerformanceCounter(&timestamp);
-  g_state_.timer_start = timestamp.QuadPart;
+  g_state_.m_timer_start_ = timestamp.QuadPart;
 }
 
 WCHAR* dxfwUtf8ToWchar(const char* input) {

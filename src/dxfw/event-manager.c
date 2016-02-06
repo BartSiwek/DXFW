@@ -7,8 +7,8 @@
 /***************************************/
 dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
   // Allow this callback to be set even if not initialized
-  dxfw_on_error prev = g_state_.callbacks.error_callback;
-  g_state_.callbacks.error_callback = callback;
+  dxfw_on_error prev = g_state_.m_callbacks_.m_error_callback_;
+  g_state_.m_callbacks_.m_error_callback_ = callback;
   return prev;
 }
 
@@ -56,8 +56,8 @@ dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyb
 /*             INTERNALS               */
 /***************************************/
 void dxfwReportError(dxfwError error) {
-  if (g_state_.callbacks.error_callback != NULL) {
-    (*g_state_.callbacks.error_callback)(error);
+  if (g_state_.m_callbacks_.m_error_callback_ != NULL) {
+    (*g_state_.m_callbacks_.m_error_callback_)(error);
   }
 }
 

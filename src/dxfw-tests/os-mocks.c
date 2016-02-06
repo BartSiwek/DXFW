@@ -9,7 +9,7 @@ struct dxfwMockWindowClass {
 
 static struct dxfwMockWindowClass* g_mock_window_class_head_ = NULL;
 
-struct dxfwMockWindowClass* dxfwTestsGetWindowClass(LPCWSTR window_class_name) {
+struct dxfwMockWindowClass* dxfwTestGetWindowClass(LPCWSTR window_class_name) {
   struct dxfwMockWindowClass* ptr = g_mock_window_class_head_;
   while (ptr != NULL && wcscmp(ptr->m_class_, window_class_name) != 0) {
     ptr = ptr->m_next_;
@@ -17,8 +17,8 @@ struct dxfwMockWindowClass* dxfwTestsGetWindowClass(LPCWSTR window_class_name) {
   return ptr;
 }
 
-void dxfwTestsAddWindowClass(CONST WNDCLASSEXW* window_class) {
-  struct dxfwMockWindowClass* ptr = dxfwTestsGetWindowClass(window_class->lpszClassName);
+void dxfwTestAddWindowClass(CONST WNDCLASSEXW* window_class) {
+  struct dxfwMockWindowClass* ptr = dxfwTestGetWindowClass(window_class->lpszClassName);
   if (ptr == NULL) {
     struct dxfwMockWindowClass* mock_window_class = (struct dxfwMockWindowClass*)malloc(sizeof(struct dxfwMockWindowClass));
     memset(mock_window_class, 0, sizeof(struct dxfwMockWindowClass));
@@ -31,7 +31,7 @@ void dxfwTestsAddWindowClass(CONST WNDCLASSEXW* window_class) {
   }
 }
 
-void dxfwTestsClearWindowClasses() {
+void dxfwTestClearWindowClasses() {
   struct dxfwMockWindowClass* ptr = g_mock_window_class_head_;
   g_mock_window_class_head_ = NULL;
 
@@ -52,7 +52,7 @@ struct dxfwMockWindow {
 
 static struct dxfwMockWindow* g_mock_window_head_ = NULL;
 
-struct dxfwMockWindow* dxfwTestsGetWindow(HWND hwnd) {
+struct dxfwMockWindow* dxfwTestGetWindow(HWND hwnd) {
   struct dxfwMockWindow* ptr = g_mock_window_head_;
   while (ptr != NULL && ptr->m_hwnd_ != hwnd) {
     ptr = ptr->m_next_;
@@ -60,8 +60,8 @@ struct dxfwMockWindow* dxfwTestsGetWindow(HWND hwnd) {
   return ptr;
 }
 
-void dxfwTestsAddWindow(HWND hwnd, WNDPROC window_procedure) {
-  struct dxfwMockWindow* ptr = dxfwTestsGetWindow(hwnd);
+void dxfwTestAddWindow(HWND hwnd, WNDPROC window_procedure) {
+  struct dxfwMockWindow* ptr = dxfwTestGetWindow(hwnd);
   if (ptr == NULL) {
     struct dxfwMockWindow* mock_window = (struct dxfwMockWindow*)malloc(sizeof(struct dxfwMockWindow));
     memset(mock_window, 0, sizeof(struct dxfwMockWindow));
@@ -74,7 +74,7 @@ void dxfwTestsAddWindow(HWND hwnd, WNDPROC window_procedure) {
   }
 }
 
-void dxfwTestsRemoveWindow(HWND hwnd) {
+void dxfwTestRemoveWindow(HWND hwnd) {
   struct dxfwMockWindow** current = &g_mock_window_head_;
   while (*current != NULL && (*current)->m_hwnd_ != hwnd) {
     current = &(*current)->m_next_;
@@ -86,7 +86,7 @@ void dxfwTestsRemoveWindow(HWND hwnd) {
   }
 }
 
-void dxfwTestsClearWindows() {
+void dxfwTestClearWindows() {
   struct dxfwMockWindow* ptr = g_mock_window_head_;
   g_mock_window_head_ = NULL;
 
@@ -98,7 +98,7 @@ void dxfwTestsClearWindows() {
 }
 
 /* Setup teardown */
-int dxfwTestsOsMocksSetup() {
+int dxfwTestOsMocksSetup() {
   if (g_mock_window_class_head_ != NULL) {
     return 1;
   }
@@ -108,9 +108,9 @@ int dxfwTestsOsMocksSetup() {
   return 0;
 }
 
-int dxfwTestsOsMocksTeardown() {
-  dxfwTestsClearWindows();
-  dxfwTestsClearWindowClasses();
+int dxfwTestOsMocksTeardown() {
+  dxfwTestClearWindows();
+  dxfwTestClearWindowClasses();
   return 0;
 }
 
@@ -138,7 +138,7 @@ WINUSERAPI BOOL WINAPI TranslateMessage(CONST MSG *lpMsg) {
 }
 
 WINUSERAPI LRESULT WINAPI DispatchMessageW(CONST MSG *lpmsg) {
-  struct dxfwMockWindow* mock_window = dxfwTestsGetWindow(lpmsg->hwnd);
+  struct dxfwMockWindow* mock_window = dxfwTestGetWindow(lpmsg->hwnd);
   assert_non_null(mock_window);
   return (*mock_window->m_window_procedure_)(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam); 
 }
@@ -153,7 +153,7 @@ WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hWnd, UINT Msg, WPARAM wParam, LPA
 }
 
 WINUSERAPI ATOM WINAPI RegisterClassExW(CONST WNDCLASSEXW* lpwcx) {
-  dxfwTestsAddWindowClass(lpwcx);
+  dxfwTestAddWindowClass(lpwcx);
   return 0;
 }
 
@@ -167,8 +167,8 @@ WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle, LPCTSTR lpClassName, LPC
   check_expected(nHeight);
 
   HWND hwnd = (HWND)mock();
-  struct dxfwMockWindowClass* mock_window_class = dxfwTestsGetWindowClass(lpClassName);
-  dxfwTestsAddWindow(hwnd, mock_window_class->m_wnd_proc_);
+  struct dxfwMockWindowClass* mock_window_class = dxfwTestGetWindowClass(lpClassName);
+  dxfwTestAddWindow(hwnd, mock_window_class->m_wnd_proc_);
 
   (*mock_window_class->m_wnd_proc_)(hwnd, WM_CREATE, 0, 0);
 
@@ -177,7 +177,7 @@ WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle, LPCTSTR lpClassName, LPC
 
 WINUSERAPI BOOL WINAPI DestroyWindow(HWND hWnd) {
   check_expected(hWnd);
-  dxfwTestsRemoveWindow(hWnd);
+  dxfwTestRemoveWindow(hWnd);
   return (BOOL)mock();
 }
 
@@ -270,10 +270,14 @@ WINUSERAPI HWND WINAPI GetActiveWindow() {
 }
 
 WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT hRawInput, UINT uiCommand, LPVOID pData, PUINT pcbSize, UINT cbSizeHeader) {
+  LPRAWINPUT raw_input = (LPRAWINPUT)pData;
+
   check_expected(hRawInput);
   check_expected(uiCommand);
-  check_expected(pData);
-  check_expected(pcbSize);
+  raw_input->header.dwType = (DWORD)mock();
+  raw_input->data.keyboard.VKey = (USHORT)mock();
+  raw_input->data.keyboard.Flags = (USHORT)mock();
+  *pcbSize = sizeof(RAWINPUT);
   check_expected(cbSizeHeader);
 
   return (UINT)mock();

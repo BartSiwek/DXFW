@@ -13,12 +13,16 @@ int main() {
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithEmptyTitleTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetEmptyWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwGetWindowSizeTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeToZeroWidthTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeToZeroHeightTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwShouldWindowCloseTest, dxfwTestSetup, dxfwTestTeardown),
-    cmocka_unit_test_setup_teardown(dxfwPollOsEventsTest, dxfwTestSetup, dxfwTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwGetWindowSizeTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeToZeroWidthTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwSetWindowSizeToZeroHeightTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwShouldWindowCloseTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwPollOsEventsTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwTwoWindowTest, dxfwTestSetup, dxfwTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwGetKeyStateTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwGetModifierFlagsTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwKeyboardCallbackTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
