@@ -153,9 +153,6 @@ int dxfwSingleWindowTestSetup(void **state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)malloc(sizeof(struct dxfwTestSingleWindowTestData));
   data->m_window_id_ = WINDOW_ID;
   data->m_window_ = w;
-  data->m_window_width_ = WINDOW_WIDTH;
-  data->m_window_height_ = WINDOW_HEIGHT;
-  data->m_window_name_ = WINDOW_TITLE;
   data->m_window_name_wide_ = title_wide;
 
   *state = data;

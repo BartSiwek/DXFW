@@ -19,9 +19,6 @@
 struct dxfwTestSingleWindowTestData {
   int m_window_id_;
   struct dxfwWindow* m_window_;
-  uint32_t m_window_width_;
-  uint32_t m_window_height_;
-  const char* m_window_name_;
   wchar_t* m_window_name_wide_;
 };
 
