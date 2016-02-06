@@ -23,6 +23,7 @@ int main() {
     cmocka_unit_test_setup_teardown(dxfwGetKeyStateTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwGetModifierFlagsTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwKeyboardCallbackTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwSetMouseButtonCallbackTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

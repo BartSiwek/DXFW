@@ -69,5 +69,6 @@ void dxfwTwoWindowTest(void** state);
 void dxfwGetKeyStateTest(void** state);
 void dxfwGetModifierFlagsTest(void** state);
 void dxfwKeyboardCallbackTest(void** state);
+void dxfwSetMouseButtonCallbackTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_
