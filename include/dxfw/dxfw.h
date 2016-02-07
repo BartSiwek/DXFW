@@ -8,6 +8,11 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <dxfw/enums.h>
 
 /* TYPEDEFS */
@@ -36,6 +41,9 @@ double dxfwGetTime();
 /* WINDOW MANAGEMENT */
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption);
 void dxfwDestroyWindow(struct dxfwWindow* window);
+
+/* WINDOW HANDLE */
+HWND dxfwGetHandle(struct dxfwWindow* window);
 
 /* WINDOW STATE */
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption);

@@ -59,6 +59,7 @@ void dxfwCreateDestroyWindowTest(void **state);
 void dxfwCreateWindowWithZeroWidthTest(void** state);
 void dxfwCreateWindowWithZeroHeightTest(void** state);
 void dxfwCreateWindowWithEmptyTitleTest(void** state);
+void dxfwGetHandleTest(void** state);
 
 void dxfwSetWindowCaptionTest(void** state);
 void dxfwSetEmptyWindowCaptionTest(void** state);
@@ -69,9 +70,11 @@ void dxfwSetWindowSizeToZeroHeightTest(void** state);
 void dxfwShouldWindowCloseTest(void** state);
 void dxfwPollOsEventsTest(void** state);
 void dxfwTwoWindowTest(void** state);
+
 void dxfwGetKeyStateTest(void** state);
 void dxfwGetModifierFlagsTest(void** state);
 void dxfwKeyboardCallbackTest(void** state);
+
 void dxfwSetMouseButtonCallbackTest(void** state);
 void dxfwSetMouseMoveCallbackTest(void** state);
 void dxfwSetMouseWheelCallbackTest(void** state);

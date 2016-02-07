@@ -109,6 +109,12 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
   dxfwDealloc(window);
 }
 
+HWND dxfwGetHandle(struct dxfwWindow* window) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(INVALID_HANDLE_VALUE);
+
+  return window->m_handle_;
+}
+
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED();
 

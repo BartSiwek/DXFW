@@ -73,6 +73,11 @@ void dxfwCreateWindowWithEmptyTitleTest(void** state) {
   dxfwTestRunSuccessfulWindowCreationTest(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 }
 
+void dxfwGetHandleTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+  assert_ptr_equal(data->m_window_id_, dxfwGetHandle(data->m_window_));
+}
+
 void RunSetCaptionTest(int id, uint32_t width, uint32_t height, const char* title, const char* new_title) {
   dxfwTestSetupAnyWindowCreateExpectations(id);
   struct dxfwWindow* w = dxfwCreateWindow(width, height, title);

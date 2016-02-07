@@ -11,6 +11,7 @@ int main() {
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithZeroWidthTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithZeroHeightTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithEmptyTitleTest, dxfwTestSetup, dxfwTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwGetHandleTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwSetEmptyWindowCaptionTest, dxfwTestSetup, dxfwTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwGetWindowSizeTest, dxfwSingleWindowTestSetup, dxfwSingleWindowTestTeardown),
