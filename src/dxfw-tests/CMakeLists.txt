@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.4)
 
 project(dxfw-tests VERSION 0.1 LANGUAGES C)
 
+include("${CMAKE_EXTRAS}/cmocka.cmake")
+
 set(PROJECT_INCLUDE_DIR "${ROOT_INCLUDE_DIR}")
 set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw-tests")
 
