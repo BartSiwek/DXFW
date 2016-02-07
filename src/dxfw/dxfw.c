@@ -9,8 +9,8 @@
 /***************************************/
 struct dxfwState g_state_ = {
   .m_initialized_ = false,
-  .m_alloc_ = malloc,
-  .m_dealloc_ = free,
+  .m_alloc_ = NULL,
+  .m_dealloc_ = NULL,
   .m_callbacks_ = {
     .m_error_callback_ = NULL
   },
@@ -42,6 +42,13 @@ bool dxfwInitialize() {
   if (g_state_.m_initialized_) {
     dxfwReportError(DXFW_ERROR_ALREADY_INITIALIZED);
     return false;
+  }
+  
+  if (g_state_.m_alloc_ == NULL) {
+    g_state_.m_alloc_ = malloc;
+  }
+  if (g_state_.m_dealloc_ == NULL) {
+    g_state_.m_dealloc_ = free;
   }
 
   dxfwInitializeTimer();

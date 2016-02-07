@@ -15,6 +15,9 @@
 
 #include <dxfw/dxfw.h>
 
+/* MACROS */
+#define DXFW_TEST_UNUSED(x) (void)(x)
+
 /* STRUCTS */
 struct dxfwTestSingleWindowTestData {
   int m_window_id_;

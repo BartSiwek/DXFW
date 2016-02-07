@@ -102,7 +102,9 @@ void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam) {
   }
 }
 
-LPARAM dxfwFireKeyboardEvent(HWND hwnd, LPARAM lparam) {
+LPARAM dxfwFireKeyboardEvent(HWND hWnd, LPARAM lparam) {
+  DXFW_UNUSED(hWnd);
+
   RAWINPUT ri;
   UINT size = sizeof(RAWINPUT);
   GetRawInputData((HRAWINPUT)lparam, RID_INPUT, &ri, &size, sizeof(RAWINPUTHEADER));
@@ -124,8 +126,8 @@ LPARAM dxfwFireKeyboardEvent(HWND hwnd, LPARAM lparam) {
     dxfwVirtualKeyModifiers modifier_flags = dxfwGetModifierFlags();
     dxfwVirtualKeyState previous_state = dxfwGetPreviousKeyState(key_code);
 
-    HWND acctive_hwnd = GetActiveWindow();
-    struct dxfwWindow* window = dxfwFindWindow(hwnd);
+    HWND active_hwnd = GetActiveWindow();
+    struct dxfwWindow* window = dxfwFindWindow(active_hwnd);
     if (window != NULL && window->m_on_keyboard_) {
       (*window->m_on_keyboard_)(window, key_code, modifier_flags, state, previous_state);
     }

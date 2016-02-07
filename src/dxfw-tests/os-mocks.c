@@ -116,7 +116,7 @@ int dxfwTestOsMocksTeardown() {
 
 /* Windows OS mocks */
 WINUSERAPI BOOL WINAPI PeekMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg) {
-  lpMsg->hwnd = (HWND)mock();
+  lpMsg->hwnd = mock_ptr_type(HWND);
   lpMsg->message = (UINT)mock();
   lpMsg->lParam = (LPARAM)mock();
   lpMsg->wParam = (WPARAM)mock();
@@ -134,6 +134,8 @@ WINUSERAPI BOOL WINAPI PeekMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, U
 
 WINUSERAPI BOOL WINAPI TranslateMessage(CONST MSG *lpMsg) {
   // This does nothing when it comes to mocking
+  DXFW_TEST_UNUSED(lpMsg);
+
   return TRUE;
 }
 
@@ -160,13 +162,20 @@ WINUSERAPI ATOM WINAPI RegisterClassExW(CONST WNDCLASSEXW* lpwcx) {
 WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
                                        int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu,
                                        HINSTANCE hInstance, LPVOID lpParam) {
+  DXFW_TEST_UNUSED(dwExStyle);
+  DXFW_TEST_UNUSED(dwStyle);
+  DXFW_TEST_UNUSED(hWndParent);
+  DXFW_TEST_UNUSED(hMenu);
+  DXFW_TEST_UNUSED(hInstance);
+  DXFW_TEST_UNUSED(lpParam);
+
   check_expected(lpWindowName);
   check_expected(x);
   check_expected(y);
   check_expected(nWidth);
   check_expected(nHeight);
 
-  HWND hwnd = (HWND)mock();
+  HWND hwnd = mock_ptr_type(HWND);
   struct dxfwMockWindowClass* mock_window_class = dxfwTestGetWindowClass(lpClassName);
   dxfwTestAddWindow(hwnd, mock_window_class->m_wnd_proc_);
 
@@ -248,12 +257,14 @@ WINUSERAPI LONG WINAPI GetWindowLongW(HWND hWnd, int nIndex) {
 }
 
 WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance, LPCTSTR lpCursorName) {
-  // Nothing
+  DXFW_TEST_UNUSED(hInstance);
+  DXFW_TEST_UNUSED(lpCursorName);
   return (HCURSOR)0;
 }
 
 WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCTSTR lpIconName) {
-  // Nothing
+  DXFW_TEST_UNUSED(hInstance);
+  DXFW_TEST_UNUSED(lpIconName);
   return (HICON)0;
 }
 
@@ -266,7 +277,7 @@ WINUSERAPI BOOL WINAPI RegisterRawInputDevices(PCRAWINPUTDEVICE pRawInputDevices
 }
 
 WINUSERAPI HWND WINAPI GetActiveWindow() {
-  return (HWND)mock();
+  return mock_ptr_type(HWND);
 }
 
 WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT hRawInput, UINT uiCommand, LPVOID pData, PUINT pcbSize, UINT cbSizeHeader) {

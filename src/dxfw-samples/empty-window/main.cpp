@@ -5,7 +5,7 @@ void errorCallback(dxfwError error) {
   std::cout << "Error " << error << std::endl;
 }
 
-int main(int argc, char* *argv) {
+int main(int /* argc */, char** /* argv */) {
   if (!dxfwInitialize()) {
     return -1;
   }

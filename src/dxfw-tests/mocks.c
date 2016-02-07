@@ -37,7 +37,12 @@ void dxfwTestSetupAnyWindowCreateExpectations(int id) {
 }
 
 void dxfwSetupWindowCreateExpectations(int id, uint32_t width, uint32_t height, const wchar_t* title) {
-  RECT r = { 0, 0, width, height };
+  RECT r;
+  r.left = 0;
+  r.top = 0;
+  r.right = width;
+  r.bottom = height;
+
   expect_value(AdjustWindowRect, lpRect->left, 0);
   expect_value(AdjustWindowRect, lpRect->top, 0);
   expect_value(AdjustWindowRect, lpRect->right, width);
@@ -108,6 +113,8 @@ wchar_t* dxfwTestUtf8ToWchar(const char* utf8) {
 
 /* SETUP & TEARDOWN */
 int dxfwTestSetup(void **state) {
+  DXFW_TEST_UNUSED(state);
+
   int mock_setup_error = dxfwTestOsMocksSetup();
   if (mock_setup_error) {
     return 1;
@@ -124,6 +131,8 @@ int dxfwTestSetup(void **state) {
 }
 
 int dxfwTestTeardown(void **state) {
+  DXFW_TEST_UNUSED(state);
+
   dxfwSetErrorCallback(NULL);
   dxfwTerminate();
 

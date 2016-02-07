@@ -23,6 +23,8 @@ void dxfwTestOnShouldCloseCallbackMock(struct dxfwWindow* window, bool should_cl
 
 /* TESTS */
 void dxfwCreateDestroyWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   // Test const
   const int WINDOW_ID = 2;
   const uint32_t WINDOW_WIDTH = 102;
@@ -33,6 +35,8 @@ void dxfwCreateDestroyWindowTest(void** state) {
 }
 
 void dxfwCreateWindowWithZeroWidthTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   const uint32_t WINDOW_WIDTH = 0;
   const uint32_t WINDOW_HEIGHT = 203;
   const char* WINDOW_NAME = "dxfwCreateWindowWithZeroWidthTest";
@@ -45,6 +49,8 @@ void dxfwCreateWindowWithZeroWidthTest(void** state) {
 
 
 void dxfwCreateWindowWithZeroHeightTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   const uint32_t WINDOW_WIDTH = 105;
   const uint32_t WINDOW_HEIGHT = 0;
   const char* WINDOW_NAME = "dxfwCreateWindowWithZeroHeightTest";
@@ -56,6 +62,8 @@ void dxfwCreateWindowWithZeroHeightTest(void** state) {
 }
 
 void dxfwCreateWindowWithEmptyTitleTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   // Test const
   const int WINDOW_ID = 7;
   const uint32_t WINDOW_WIDTH = 107;
@@ -82,6 +90,8 @@ void RunSetCaptionTest(int id, uint32_t width, uint32_t height, const char* titl
 }
 
 void dxfwSetWindowCaptionTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   // Test const
   const int WINDOW_ID = 8;
   const uint32_t WINDOW_WIDTH = 108;
@@ -93,6 +103,8 @@ void dxfwSetWindowCaptionTest(void** state) {
 }
 
 void dxfwSetEmptyWindowCaptionTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   // Test const
   const int WINDOW_ID = 9;
   const uint32_t WINDOW_WIDTH = 109;
@@ -154,12 +166,12 @@ void dxfwSetWindowSizeTest(void** state) {
   expect_value(GetWindowLongW, nIndex, GWL_STYLE);
   will_return(GetWindowLongW, (LONG)WINDOW_STYLE);
   
-  RECT new_client_rect = { 
-    .left = client_rect.left, 
-    .top = client_rect.top, 
-    .right = client_rect.left + NEW_WINDOW_WIDTH,
-    .bottom = client_rect.top + NEW_WINDOW_HEIGHT
-  };
+  RECT new_client_rect;
+  new_client_rect.left = client_rect.left;
+  new_client_rect.top = client_rect.top;
+  new_client_rect.right = client_rect.left + NEW_WINDOW_WIDTH;
+  new_client_rect.bottom = client_rect.top + NEW_WINDOW_HEIGHT;
+  
   expect_value(AdjustWindowRect, lpRect->left, new_client_rect.left);
   expect_value(AdjustWindowRect, lpRect->top, new_client_rect.top);
   expect_value(AdjustWindowRect, lpRect->right, new_client_rect.right);
@@ -252,6 +264,8 @@ void dxfwPollOsEventsTest(void** state) {
 }
 
 void dxfwTwoWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
   // Test const
   const int WINDOW_1_ID = 16;
   const int WINDOW_2_ID = 17;

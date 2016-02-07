@@ -202,7 +202,11 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
   switch (msg) {
     case WM_CREATE: {
       // Register RAW Input
-      RAWINPUTDEVICE rid = { 0x01, 6, RIDEV_NOLEGACY | RIDEV_INPUTSINK, hwnd };
+      RAWINPUTDEVICE rid;
+      rid.usUsagePage = 0x01;
+      rid.usUsage = 6;
+      rid.dwFlags = RIDEV_NOLEGACY | RIDEV_INPUTSINK;
+      rid.hwndTarget = hwnd;
       RegisterRawInputDevices(&rid, 1, sizeof(rid));
 
       // Return 0 to allow the window to proceed in the creation process.

@@ -1,7 +1,7 @@
 #include "dxfw-tests.h"
 
 /* HELPERS */
-void dxfwTestFireKeyDown(int window_id, USHORT windows_key_code, dxfwVirtualKeyCode key) {
+void dxfwTestFireKeyDown(int window_id, USHORT windows_key_code) {
   const LPARAM LPARAM_VALUE = 7;
 
   dxfwTestSetupPeekMessage((HWND)window_id, WM_INPUT, LPARAM_VALUE, 0);
@@ -21,7 +21,7 @@ void dxfwTestFireKeyDown(int window_id, USHORT windows_key_code, dxfwVirtualKeyC
   dxfwPollOsEvents();
 }
 
-void dxfwTestFireKeyUp(int window_id, USHORT windows_key_code, dxfwVirtualKeyCode key) {
+void dxfwTestFireKeyUp(int window_id, USHORT windows_key_code) {
   const LPARAM LPARAM_VALUE = 11;
 
   dxfwTestSetupPeekMessage((HWND)window_id, WM_INPUT, LPARAM_VALUE, 0);
@@ -62,17 +62,17 @@ void dxfwGetKeyStateTest(void** state) {
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetKeyState(KEY));
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetPreviousKeyState(KEY));
 
-  dxfwTestFireKeyDown(data->m_window_id_, WINDOWS_KEY, KEY);
+  dxfwTestFireKeyDown(data->m_window_id_, WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_STATE_DOWN, dxfwGetKeyState(KEY));
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetPreviousKeyState(KEY));
 
-  dxfwTestFireKeyUp(data->m_window_id_, WINDOWS_KEY, KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetKeyState(KEY));
   assert_int_equal(DXFW_KEY_STATE_DOWN, dxfwGetPreviousKeyState(KEY));
 
-  dxfwTestFireKeyUp(data->m_window_id_, WINDOWS_KEY, KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetKeyState(KEY));
   assert_int_equal(DXFW_KEY_STATE_UP, dxfwGetPreviousKeyState(KEY));
@@ -82,27 +82,25 @@ void dxfwGetModifierFlagsTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
 
   // Consts
-  const dxfwVirtualKeyCode CONTROL_KEY = DXFW_KEY_LCTRL;
   const USHORT CONTROL_WINDOWS_KEY = VK_LCONTROL;
-  const dxfwVirtualKeyCode SHIFT_KEY = DXFW_KEY_RSHIFT;
   const USHORT SHIFT_WINDOWS_KEY = VK_RSHIFT;
 
   // Test
   assert_int_equal(DXFW_KEY_MODIFIER_NONE, dxfwGetModifierFlags());
 
-  dxfwTestFireKeyDown(data->m_window_id_, CONTROL_WINDOWS_KEY, CONTROL_KEY);
+  dxfwTestFireKeyDown(data->m_window_id_, CONTROL_WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_MODIFIER_CTRL, dxfwGetModifierFlags());
 
-  dxfwTestFireKeyDown(data->m_window_id_, SHIFT_WINDOWS_KEY, SHIFT_KEY);
+  dxfwTestFireKeyDown(data->m_window_id_, SHIFT_WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_MODIFIER_CTRL | DXFW_KEY_MODIFIER_SHIFT, dxfwGetModifierFlags());
 
-  dxfwTestFireKeyUp(data->m_window_id_, CONTROL_WINDOWS_KEY, CONTROL_KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, CONTROL_WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_MODIFIER_SHIFT, dxfwGetModifierFlags());
 
-  dxfwTestFireKeyUp(data->m_window_id_, SHIFT_WINDOWS_KEY, SHIFT_KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, SHIFT_WINDOWS_KEY);
 
   assert_int_equal(DXFW_KEY_MODIFIER_NONE, dxfwGetModifierFlags());
 }
@@ -125,26 +123,26 @@ void dxfwKeyboardCallbackTest(void** state) {
   expect_value(dxfwTestOnKeyboardCallbackMock, modifiers, DXFW_KEY_MODIFIER_CTRL);  // Modifiers are registered immidiatelly
   expect_value(dxfwTestOnKeyboardCallbackMock, state, DXFW_KEY_STATE_DOWN);
   expect_value(dxfwTestOnKeyboardCallbackMock, prev_state, DXFW_KEY_STATE_UP);
-  dxfwTestFireKeyDown(data->m_window_id_, CONTROL_WINDOWS_KEY, CONTROL_KEY);
+  dxfwTestFireKeyDown(data->m_window_id_, CONTROL_WINDOWS_KEY);
 
   expect_value(dxfwTestOnKeyboardCallbackMock, window, data->m_window_);
   expect_value(dxfwTestOnKeyboardCallbackMock, key_code, D_KEY);
   expect_value(dxfwTestOnKeyboardCallbackMock, modifiers, DXFW_KEY_MODIFIER_CTRL);
   expect_value(dxfwTestOnKeyboardCallbackMock, state, DXFW_KEY_STATE_DOWN);
   expect_value(dxfwTestOnKeyboardCallbackMock, prev_state, DXFW_KEY_STATE_UP);
-  dxfwTestFireKeyDown(data->m_window_id_, D_WINDOWS_KEY, D_KEY);
+  dxfwTestFireKeyDown(data->m_window_id_, D_WINDOWS_KEY);
   
   expect_value(dxfwTestOnKeyboardCallbackMock, window, data->m_window_);
   expect_value(dxfwTestOnKeyboardCallbackMock, key_code, CONTROL_KEY);
   expect_value(dxfwTestOnKeyboardCallbackMock, modifiers, DXFW_KEY_MODIFIER_NONE);  // Modifiers are registered immidiatelly
   expect_value(dxfwTestOnKeyboardCallbackMock, state, DXFW_KEY_STATE_UP);
   expect_value(dxfwTestOnKeyboardCallbackMock, prev_state, DXFW_KEY_STATE_DOWN);
-  dxfwTestFireKeyUp(data->m_window_id_, CONTROL_WINDOWS_KEY, CONTROL_KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, CONTROL_WINDOWS_KEY);
 
   expect_value(dxfwTestOnKeyboardCallbackMock, window, data->m_window_);
   expect_value(dxfwTestOnKeyboardCallbackMock, key_code, D_KEY);
   expect_value(dxfwTestOnKeyboardCallbackMock, modifiers, DXFW_KEY_MODIFIER_NONE);
   expect_value(dxfwTestOnKeyboardCallbackMock, state, DXFW_KEY_STATE_UP);
   expect_value(dxfwTestOnKeyboardCallbackMock, prev_state, DXFW_KEY_STATE_DOWN);
-  dxfwTestFireKeyUp(data->m_window_id_, D_WINDOWS_KEY, D_KEY);
+  dxfwTestFireKeyUp(data->m_window_id_, D_WINDOWS_KEY);
 }

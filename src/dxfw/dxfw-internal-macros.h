@@ -13,4 +13,6 @@
         return x;                                     \
     }
 
+#define DXFW_UNUSED(x) (void)(x)
+
 #endif  // DXFW_DXFW_INTERNAL_MACROS_H_

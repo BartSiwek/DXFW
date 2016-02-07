@@ -2,7 +2,7 @@
 
 /* HLPERS */
 void dxfwTestFireMouseButton(int window_id, dxfwMouseButton button, dxfwMouseButtonAction action, int16_t x, int16_t y) {
-  UINT msg;
+  UINT msg = 0;
   if (button == DXFW_LEFT_MOUSE_BUTTON && action == DXFW_MOUSE_BUTTON_DOWN) {
     msg = WM_LBUTTONDOWN;
   } else if (button == DXFW_LEFT_MOUSE_BUTTON && action == DXFW_MOUSE_BUTTON_UP) {
