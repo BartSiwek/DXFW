@@ -8,7 +8,7 @@ void dxfwTestSetupAnyWmCreateExpectations() {
   will_return(RegisterRawInputDevices, TRUE);
 }
 
-void dxfwTestSetupAnyWindowCreateExpectations(int id) {
+void dxfwTestSetupAnyWindowCreateExpectations(uintptr_t id) {
   RECT r = { 0, 0, 1, 1 };
   expect_any(AdjustWindowRect, lpRect->left);
   expect_any(AdjustWindowRect, lpRect->top);
@@ -36,7 +36,7 @@ void dxfwTestSetupAnyWindowCreateExpectations(int id) {
   will_return(UpdateWindow, TRUE);
 }
 
-void dxfwSetupWindowCreateExpectations(int id, uint32_t width, uint32_t height, const wchar_t* title) {
+void dxfwSetupWindowCreateExpectations(uintptr_t id, uint32_t width, uint32_t height, const wchar_t* title) {
   RECT r;
   r.left = 0;
   r.top = 0;
@@ -69,7 +69,7 @@ void dxfwSetupWindowCreateExpectations(int id, uint32_t width, uint32_t height, 
   will_return(UpdateWindow, TRUE);
 }
 
-void dxfwTestSetupWindowDestroyExpectations(int id) {
+void dxfwTestSetupWindowDestroyExpectations(uintptr_t id) {
   expect_value(DestroyWindow, hWnd, (HWND)id);
   will_return(DestroyWindow, TRUE);
 }
@@ -150,7 +150,7 @@ int dxfwSingleWindowTestSetup(void **state) {
     return base_result;
   }
 
-  const int WINDOW_ID = 1;
+  const uintptr_t WINDOW_ID = 1;
   const uint32_t WINDOW_WIDTH = 101;
   const uint32_t WINDOW_HEIGHT = 201;
   const char* WINDOW_TITLE = "dxfwSingleWindowTestInstance";

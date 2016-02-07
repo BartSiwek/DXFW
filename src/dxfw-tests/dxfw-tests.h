@@ -20,7 +20,7 @@
 
 /* STRUCTS */
 struct dxfwTestSingleWindowTestData {
-  int m_window_id_;
+  uintptr_t m_window_id_;
   struct dxfwWindow* m_window_;
   wchar_t* m_window_name_wide_;
 };
@@ -28,9 +28,9 @@ struct dxfwTestSingleWindowTestData {
 /* TEST HELPERS */
 wchar_t* dxfwTestUtf8ToWchar(const char* utf8);
 void dxfwTestSetupAnyWmCreateExpectations();
-void dxfwTestSetupAnyWindowCreateExpectations(int id);
-void dxfwSetupWindowCreateExpectations(int id, uint32_t width, uint32_t height, const wchar_t* title);
-void dxfwTestSetupWindowDestroyExpectations(int id);
+void dxfwTestSetupAnyWindowCreateExpectations(uintptr_t id);
+void dxfwSetupWindowCreateExpectations(uintptr_t id, uint32_t width, uint32_t height, const wchar_t* title);
+void dxfwTestSetupWindowDestroyExpectations(uintptr_t id);
 void dxfwTestSetupPeekMessage(HWND hwnd, UINT msg, LPARAM lparam, WPARAM wparam);
 void dxfwTestSetupLastPeekMessage();
 void dxfwSetupDefWindowProc(HWND hwnd, UINT msg, LPARAM lparam, WPARAM wparam);

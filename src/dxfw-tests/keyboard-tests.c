@@ -1,7 +1,7 @@
 #include "dxfw-tests.h"
 
 /* HELPERS */
-void dxfwTestFireKeyDown(int window_id, USHORT windows_key_code) {
+void dxfwTestFireKeyDown(uintptr_t window_id, USHORT windows_key_code) {
   const LPARAM LPARAM_VALUE = 7;
 
   dxfwTestSetupPeekMessage((HWND)window_id, WM_INPUT, LPARAM_VALUE, 0);
@@ -21,7 +21,7 @@ void dxfwTestFireKeyDown(int window_id, USHORT windows_key_code) {
   dxfwPollOsEvents();
 }
 
-void dxfwTestFireKeyUp(int window_id, USHORT windows_key_code) {
+void dxfwTestFireKeyUp(uintptr_t window_id, USHORT windows_key_code) {
   const LPARAM LPARAM_VALUE = 11;
 
   dxfwTestSetupPeekMessage((HWND)window_id, WM_INPUT, LPARAM_VALUE, 0);

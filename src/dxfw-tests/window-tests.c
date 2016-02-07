@@ -1,7 +1,7 @@
 #include "dxfw-tests.h"
 
 /* HELPERS */
-void dxfwTestRunSuccessfulWindowCreationTest(int id, uint32_t width, uint32_t height, const char* title) {
+void dxfwTestRunSuccessfulWindowCreationTest(uintptr_t id, uint32_t width, uint32_t height, const char* title) {
   // Create
   wchar_t* title_wide = dxfwTestUtf8ToWchar(title);
   dxfwSetupWindowCreateExpectations(id, width, height, title_wide);
@@ -26,7 +26,7 @@ void dxfwCreateDestroyWindowTest(void** state) {
   DXFW_TEST_UNUSED(state);
 
   // Test const
-  const int WINDOW_ID = 2;
+  const uintptr_t WINDOW_ID = 2;
   const uint32_t WINDOW_WIDTH = 102;
   const uint32_t WINDOW_HEIGHT = 202;
   const char* WINDOW_NAME = "dxfwCreateDestroyWindowTest";
@@ -65,7 +65,7 @@ void dxfwCreateWindowWithEmptyTitleTest(void** state) {
   DXFW_TEST_UNUSED(state);
 
   // Test const
-  const int WINDOW_ID = 7;
+  const uintptr_t WINDOW_ID = 7;
   const uint32_t WINDOW_WIDTH = 107;
   const uint32_t WINDOW_HEIGHT = 207;
   const char* WINDOW_NAME = "";
@@ -78,7 +78,7 @@ void dxfwGetHandleTest(void** state) {
   assert_ptr_equal(data->m_window_id_, dxfwGetHandle(data->m_window_));
 }
 
-void RunSetCaptionTest(int id, uint32_t width, uint32_t height, const char* title, const char* new_title) {
+void RunSetCaptionTest(uintptr_t id, uint32_t width, uint32_t height, const char* title, const char* new_title) {
   dxfwTestSetupAnyWindowCreateExpectations(id);
   struct dxfwWindow* w = dxfwCreateWindow(width, height, title);
 
@@ -98,7 +98,7 @@ void dxfwSetWindowCaptionTest(void** state) {
   DXFW_TEST_UNUSED(state);
 
   // Test const
-  const int WINDOW_ID = 8;
+  const uintptr_t WINDOW_ID = 8;
   const uint32_t WINDOW_WIDTH = 108;
   const uint32_t WINDOW_HEIGHT = 208;
   const char* WINDOW_NAME = "dxfwSetWindowCaptionTest";
@@ -111,7 +111,7 @@ void dxfwSetEmptyWindowCaptionTest(void** state) {
   DXFW_TEST_UNUSED(state);
 
   // Test const
-  const int WINDOW_ID = 9;
+  const uintptr_t WINDOW_ID = 9;
   const uint32_t WINDOW_WIDTH = 109;
   const uint32_t WINDOW_HEIGHT = 209;
   const char* WINDOW_NAME = "dxfwSetEmptyWindowCaptionTest";
@@ -272,8 +272,8 @@ void dxfwTwoWindowTest(void** state) {
   DXFW_TEST_UNUSED(state);
 
   // Test const
-  const int WINDOW_1_ID = 16;
-  const int WINDOW_2_ID = 17;
+  const uintptr_t WINDOW_1_ID = 16;
+  const uintptr_t WINDOW_2_ID = 17;
   const uint32_t WINDOW_1_WIDTH = 116;
   const uint32_t WINDOW_1_HEIGHT = 216;
   const uint32_t WINDOW_2_WIDTH = 117;

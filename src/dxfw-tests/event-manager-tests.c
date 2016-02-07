@@ -1,7 +1,7 @@
 #include "dxfw-tests.h"
 
 /* HLPERS */
-void dxfwTestFireMouseButton(int window_id, dxfwMouseButton button, dxfwMouseButtonAction action, int16_t x, int16_t y) {
+void dxfwTestFireMouseButton(uintptr_t window_id, dxfwMouseButton button, dxfwMouseButtonAction action, int16_t x, int16_t y) {
   UINT msg = 0;
   if (button == DXFW_LEFT_MOUSE_BUTTON && action == DXFW_MOUSE_BUTTON_DOWN) {
     msg = WM_LBUTTONDOWN;
@@ -38,7 +38,7 @@ void dxfwTestRunMouseButtonTest(struct dxfwTestSingleWindowTestData* data, dxfwM
   dxfwTestFireMouseButton(data->m_window_id_, button, action, x, y);
 }
 
-void dxfwTestFireMouseMove(int window_id, int16_t x, int16_t y) {
+void dxfwTestFireMouseMove(uintptr_t window_id, int16_t x, int16_t y) {
   LPARAM lparam = (((LPARAM)x) & 0xffff) | (((LPARAM)y) << 16);
 
   dxfwTestSetupPeekMessage((HWND)window_id, WM_MOUSEMOVE, lparam, 0);
@@ -56,7 +56,7 @@ void dxfwTestRunMouseMoveTest(struct dxfwTestSingleWindowTestData* data, int16_t
   dxfwTestFireMouseMove(data->m_window_id_, x, y);
 }
 
-void dxfwTestFireMouseWheel(int window_id, int16_t x, int16_t y, int16_t delta) {
+void dxfwTestFireMouseWheel(uintptr_t window_id, int16_t x, int16_t y, int16_t delta) {
   LPARAM lparam = (((LPARAM)x) & 0xffff) | (((LPARAM)y) << 16);
   WPARAM wparam = (((LPARAM)delta) << 16) | 0x0000;
 
