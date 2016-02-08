@@ -45,6 +45,10 @@ void dxfwDestroyWindow(struct dxfwWindow* window);
 /* WINDOW HANDLE */
 HWND dxfwGetHandle(struct dxfwWindow* window);
 
+/* USER DATA */
+void dxfwSetWindowUserData(struct dxfwWindow* window, void* data);
+void* dxfwGetWindowUserData(struct dxfwWindow* window);
+
 /* WINDOW STATE */
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption);
 void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height); 

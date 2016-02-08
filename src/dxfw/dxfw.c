@@ -34,6 +34,9 @@ void dxfwSetAlloc(dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
     return;
   }
 
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(alloc, NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(dealloc, NULL);
+
   g_state_.m_alloc_ = alloc;
   g_state_.m_dealloc_ = dealloc;
 }

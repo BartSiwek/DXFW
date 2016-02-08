@@ -112,16 +112,11 @@ wchar_t* dxfwTestUtf8ToWchar(const char* utf8) {
 }
 
 /* SETUP & TEARDOWN */
-int dxfwTestSetup(void **state) {
+int dxfwNotInitializedTestSetup(void **state) {
   DXFW_TEST_UNUSED(state);
 
   int mock_setup_error = dxfwTestOsMocksSetup();
   if (mock_setup_error) {
-    return 1;
-  }
-
-  bool initialize_ok = dxfwInitialize();
-  if (!initialize_ok) {
     return 1;
   }
 
@@ -130,11 +125,10 @@ int dxfwTestSetup(void **state) {
   return 0;
 }
 
-int dxfwTestTeardown(void **state) {
+int dxfwNotInitializedTestTeardown(void **state) {
   DXFW_TEST_UNUSED(state);
 
   dxfwSetErrorCallback(NULL);
-  dxfwTerminate();
 
   int mock_teardown_error = dxfwTestOsMocksTeardown();
   if (mock_teardown_error) {
@@ -144,8 +138,33 @@ int dxfwTestTeardown(void **state) {
   return 0;
 }
 
+int dxfwInitializedTestSetup(void **state) {
+  int base_result = dxfwNotInitializedTestSetup(state);
+  if (base_result != 0) {
+    return 1;
+  }
+
+  bool initialize_ok = dxfwInitialize();
+  if (!initialize_ok) {
+    return 1;
+  }
+
+  return 0;
+}
+
+int dxfwInitializedTestTeardown(void **state) {
+  dxfwTerminate();
+
+  int base_result = dxfwNotInitializedTestTeardown(state);
+  if (base_result != 0) {
+    return 1;
+  }
+
+  return 0;
+}
+
 int dxfwSingleWindowTestSetup(void **state) {
-  int base_result = dxfwTestSetup(state);
+  int base_result = dxfwInitializedTestSetup(state);
   if (base_result != 0) {
     return base_result;
   }
@@ -177,7 +196,7 @@ int dxfwSingleWindowTestTeardown(void **state) {
 
   free(data->m_window_name_wide_);
 
-  int base_result = dxfwTestTeardown(state);
+  int base_result = dxfwInitializedTestTeardown(state);
   if (base_result != 0) {
     return base_result;
   }

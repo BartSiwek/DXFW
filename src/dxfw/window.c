@@ -12,6 +12,7 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /***************************************/
 struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(caption, NULL, NULL);
 
   // Check if size makes sense
   if (width == 0 || height == 0) {
@@ -74,6 +75,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   memset(window, 0, sizeof(struct dxfwWindow));
 
   window->m_should_close_ = false;
+  window->m_user_data_ = NULL;
 
   window->m_on_should_close_changed_ = NULL;
   window->m_on_mouse_button_ = NULL;
@@ -113,6 +115,18 @@ HWND dxfwGetHandle(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(INVALID_HANDLE_VALUE);
 
   return window->m_handle_;
+}
+
+void dxfwSetWindowUserData(struct dxfwWindow* window, void* data) {
+  DXFW_CHECK_IF_INITIALIZED();
+
+  window->m_user_data_ = data;
+}
+
+void* dxfwGetWindowUserData(struct dxfwWindow* window) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+
+  return window->m_user_data_;
 }
 
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
@@ -171,8 +185,9 @@ bool dxfwShouldWindowClose(struct dxfwWindow* window) {
 }
 
 void dxfwPollOsEvents() {
-  MSG msg;
+  DXFW_CHECK_IF_INITIALIZED();
 
+  MSG msg;
   while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
     if (msg.message == WM_QUIT) {
       break;

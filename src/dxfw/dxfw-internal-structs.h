@@ -14,8 +14,9 @@
 
 /* STRUCTS */
 struct dxfwWindow {
-  // Settings
+  // State
   bool m_should_close_;
+  void* m_user_data_;
 
   // Events
   dxfw_on_should_close_changed m_on_should_close_changed_;

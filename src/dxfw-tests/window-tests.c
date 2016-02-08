@@ -73,9 +73,35 @@ void dxfwCreateWindowWithEmptyTitleTest(void** state) {
   dxfwTestRunSuccessfulWindowCreationTest(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 }
 
+void dxfwCreateWindowWithNullTitleTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  // Test const
+  const uint32_t WINDOW_WIDTH = 107;
+  const uint32_t WINDOW_HEIGHT = 207;
+  const char* WINDOW_NAME = NULL;
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
+}
+
 void dxfwGetHandleTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
   assert_ptr_equal(data->m_window_id_, dxfwGetHandle(data->m_window_));
+}
+
+void dxfwSetAndGetUserDataTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  uintptr_t DATA = 789;
+
+  assert_ptr_equal(NULL, dxfwGetWindowUserData(data->m_window_));
+
+  dxfwSetWindowUserData(data->m_window_, (void*)DATA);
+  assert_ptr_equal((void*)DATA, dxfwGetWindowUserData(data->m_window_));
+
+  dxfwSetWindowUserData(data->m_window_, NULL);
+  assert_ptr_equal(NULL, dxfwGetWindowUserData(data->m_window_));
 }
 
 void RunSetCaptionTest(uintptr_t id, uint32_t width, uint32_t height, const char* title, const char* new_title) {

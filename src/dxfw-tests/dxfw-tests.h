@@ -36,8 +36,10 @@ void dxfwTestSetupLastPeekMessage();
 void dxfwSetupDefWindowProc(HWND hwnd, UINT msg, LPARAM lparam, WPARAM wparam);
 
 /* SETUP & TEARDOWN */
-int dxfwTestSetup(void **state);
-int dxfwTestTeardown(void **state);
+int dxfwNotInitializedTestSetup(void **state);
+int dxfwNotInitializedTestTeardown(void **state);
+int dxfwInitializedTestSetup(void **state);
+int dxfwInitializedTestTeardown(void **state);
 int dxfwSingleWindowTestSetup(void **state);
 int dxfwSingleWindowTestTeardown(void **state);
 
@@ -53,13 +55,17 @@ void dxfwInitTest(void **state);
 void dxfwDoubleInitTest(void **state);
 void dxfwNoInitTest(void **state);
 void dxfwMemoryTest(void **state);
+void dxfwSetAllocNullArguments(void **state);
+void dxfwNotInitializedTest(void **state);
 void dxfwGetTimeTest(void **state);
 
 void dxfwCreateDestroyWindowTest(void **state);
 void dxfwCreateWindowWithZeroWidthTest(void** state);
 void dxfwCreateWindowWithZeroHeightTest(void** state);
 void dxfwCreateWindowWithEmptyTitleTest(void** state);
+void dxfwCreateWindowWithNullTitleTest(void** state);
 void dxfwGetHandleTest(void** state);
+void dxfwSetAndGetUserDataTest(void** state);
 
 void dxfwSetWindowCaptionTest(void** state);
 void dxfwSetEmptyWindowCaptionTest(void** state);
