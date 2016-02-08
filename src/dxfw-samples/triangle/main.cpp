@@ -1,14 +1,42 @@
 #include <string>
 #include <memory>
+#include <sstream>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <Windows.h>
 #include <dxgi.h>
 #include <d3d11.h>
+#include <wrl.h>
+#include <comdef.h>
 #endif
 
+#pragma comment(lib, "d3d11.lib")
+
 #include <dxfw/dxfw.h>
+
+#if defined(DEBUG) | defined(_DEBUG)
+#ifndef DirectXTrace
+#define DirectXTrace(f, l, h, m) PrintDirectXTrace(f, l, h, m)
+#endif
+#else
+#ifndef DirectXTrace
+#define DirectXTrace(f, l, h, m) (void)(f); (void)(l); (void)(h); (void)(m)
+#endif
+#endif 
+
+void PrintDirectXTrace(const char* file, int line, HRESULT hr, bool show_msg_box) {
+  _com_error err(hr);
+
+  std::wstringstream ss;
+  ss << file << ":" << line << " " << err.ErrorMessage();
+  
+  const std::wstring& formated_message = ss.str();
+  OutputDebugString(formated_message.c_str());
+  if (show_msg_box) {
+    MessageBox(NULL, formated_message.c_str(), L"DirectXTrace", MB_OK);
+  }
+}
 
 class DxfwGuard {
 public:
@@ -35,37 +63,11 @@ private:
   bool m_is_initialized_;
 };
 
-class DxfwWindowGuard {
-public:
-  DxfwWindowGuard(uint32_t width, uint32_t height, const char* title) : m_window_(nullptr) {
-    m_window_ = dxfwCreateWindow(width, height, title);
+class DxfwWindowDeleter {
+ public:
+  void operator()(dxfwWindow* window) const {
+    dxfwDestroyWindow(window);
   }
-
-  DxfwWindowGuard(const DxfwWindowGuard&) = delete;
-  DxfwWindowGuard& operator=(const DxfwWindowGuard&) = delete;
-  DxfwWindowGuard(DxfwWindowGuard&&) = delete;
-  DxfwWindowGuard& operator=(DxfwWindowGuard&&) = delete;
-
-  ~DxfwWindowGuard() {
-    if (m_window_ != nullptr) {
-      dxfwDestroyWindow(m_window_);
-    }
-  }
-
-  operator bool() const {
-    return (m_window_ != nullptr);
-  }
-
-  const dxfwWindow* Get() const {
-    return m_window_;
-  }
-
-  dxfwWindow* Get() {
-    return m_window_;
-  }
-
-private:
-  dxfwWindow* m_window_;
 };
 
 void ErrorCallback(dxfwError error) {
@@ -73,8 +75,11 @@ void ErrorCallback(dxfwError error) {
   MessageBox(NULL, error_message.c_str(), L"DXFW Error", MB_OK);
 }
 
-bool InitializeDirect3d11() {
-/*
+bool InitializeDirect3d11(dxfwWindow* window) {
+  ID3D11Device* device;
+  ID3D11DeviceContext* device_context;
+  ID3D11RenderTargetView* render_target_view;
+
   HRESULT hr = S_OK;
 
   UINT create_device_flags = 0;
@@ -97,7 +102,7 @@ bool InitializeDirect3d11() {
 
   ZeroMemory(&swap_chain_desc, sizeof(swap_chain_desc));
 
-  HWND window_handle = m_window_.GetHandle();
+  HWND window_handle = dxfwGetHandle(window);
 
   swap_chain_desc.BufferCount = 1;
   swap_chain_desc.BufferDesc.Width = 800;  // Get from window
@@ -119,45 +124,46 @@ bool InitializeDirect3d11() {
     D3D_DRIVER_TYPE driver_type = driver_types[driver_type_index];
     D3D_FEATURE_LEVEL result_feature_level;
     hr = D3D11CreateDeviceAndSwapChain(NULL, driver_type, NULL, create_device_flags, feature_levels,
-      num_feature_levels, D3D11_SDK_VERSION, &swap_chain_desc,
-      &swap_chain, &m_d3d11_device_, &result_feature_level,
-      &m_d3d11_device_context_);
+                                       num_feature_levels, D3D11_SDK_VERSION, &swap_chain_desc,
+                                       &swap_chain, &device, &result_feature_level, &device_context);
 
     if (SUCCEEDED(hr)) {
       break;
     }
 
     if (FAILED(hr)) {
-      DXTrace(__FILE__, __LINE__, hr, DXGetErrorDescription(hr), TRUE);
+      DirectXTrace(__FILE__, __LINE__, hr, false);
     }
+  }
+
+  if (FAILED(hr)) {
+    DirectXTrace(__FILE__, __LINE__, hr, true);
+    return false;
   }
 
   // Create our BackBuffer
   ID3D11Texture2D* back_buffer;
   hr = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
   if (FAILED(hr)) {
-    DXTrace(__FILE__, __LINE__, hr, DXGetErrorDescription(hr), TRUE);
+    DirectXTrace(__FILE__, __LINE__, hr, true);
     return false;
   }
 
   // Create our Render Target
-  hr = m_d3d11_device_->CreateRenderTargetView(back_buffer, NULL, &m_render_target_view_);
+  hr = device->CreateRenderTargetView(back_buffer, NULL, &render_target_view);
   if (FAILED(hr)) {
-    DXTrace(__FILE__, __LINE__, hr, DXGetErrorDescription(hr), TRUE);
+    DirectXTrace(__FILE__, __LINE__, hr, true);
     return false;
   }
 
   back_buffer->Release();
 
   // Set our Render Target
-  m_d3d11_device_context_->OMSetRenderTargets(1, &m_render_target_view_, NULL);
+  device_context->OMSetRenderTargets(1, &render_target_view, NULL);
 
-  // Set the swaphain for window
-  m_window_.SetSwapChain(swap_chain);
+  // Set the swap chain for window
 
   // Return success
-  return true;
-  */
   return true;
 }
 
@@ -169,21 +175,19 @@ int main(int /* argc */, char** /* argv */) {
 
   dxfwSetErrorCallback(ErrorCallback);
 
-  DxfwWindowGuard window(800, 600, "Hello DirectX");
-
+  std::unique_ptr<dxfwWindow, DxfwWindowDeleter> window(dxfwCreateWindow(800, 600, "Hello DirectX"));
   if (!window) {
-    dxfwTerminate();
     return -1;
   }
 
-  bool direct3d11_ok = InitializeDirect3d11();
+  bool direct3d11_ok = InitializeDirect3d11(window.get());
   if (!direct3d11_ok) {
     return -1;
   }
 
   // Initialize Scene
 
-  while (!dxfwShouldWindowClose(window.Get())) {
+  while (!dxfwShouldWindowClose(window.get())) {
     // Render
     // Swap buffers
     dxfwPollOsEvents();
