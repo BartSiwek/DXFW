@@ -7,35 +7,47 @@
 #include <Windows.h>
 #include <dxgi.h>
 #include <d3d11.h>
-#include <wrl.h>
-#include <comdef.h>
 #endif
-
-#pragma comment(lib, "d3d11.lib")
 
 #include <dxfw/dxfw.h>
 
 #if defined(DEBUG) | defined(_DEBUG)
-#ifndef DirectXTrace
-#define DirectXTrace(f, l, h, m) PrintDirectXTrace(f, l, h, m)
+#ifndef DXFW_TRACE
+#define DXFW_TRACE(FILE, LINE, HR, MSG_BOX) dxfwTrace(FILE, LINE, HR, MSG_BOX)
 #endif
 #else
-#ifndef DirectXTrace
-#define DirectXTrace(f, l, h, m) (void)(f); (void)(l); (void)(h); (void)(m)
+#ifndef DXFW_TRACE
+#define DXFW_TRACE(FILE, LINE, HR, MSG_BOX) (void)(FILE); (void)(LINE); (void)(HR); (void)(MSG_BOX)
 #endif
 #endif 
 
-void PrintDirectXTrace(const char* file, int line, HRESULT hr, bool show_msg_box) {
-  _com_error err(hr);
+void dxfwTrace(const char* file, int line, HRESULT hr, bool show_msg_box) {
+  TCHAR* system_message = NULL;
+  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL,
+                hr,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&system_message,
+                0,
+                NULL);
 
-  std::wstringstream ss;
-  ss << file << ":" << line << " " << err.ErrorMessage();
-  
-  const std::wstring& formated_message = ss.str();
-  OutputDebugString(formated_message.c_str());
+  DWORD_PTR arguments[] = { (DWORD_PTR)file, (DWORD_PTR)line, (DWORD_PTR)system_message };
+  TCHAR* full_message = NULL;
+  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+                TEXT("%1!S!(%2!lu!): %3!s!"),
+                NULL,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&full_message,
+                0,
+                (va_list*)&arguments);
+
+  OutputDebugString(full_message);
   if (show_msg_box) {
-    MessageBox(NULL, formated_message.c_str(), L"DirectXTrace", MB_OK);
+    MessageBox(NULL, full_message, L"DXFW Trace", MB_OK);
   }
+
+  HeapFree(GetProcessHeap(), 0, full_message);
+  HeapFree(GetProcessHeap(), 0, system_message);
 }
 
 class DxfwGuard {
@@ -132,12 +144,12 @@ bool InitializeDirect3d11(dxfwWindow* window) {
     }
 
     if (FAILED(hr)) {
-      DirectXTrace(__FILE__, __LINE__, hr, false);
+      DXFW_TRACE(__FILE__, __LINE__, hr, false);
     }
   }
 
   if (FAILED(hr)) {
-    DirectXTrace(__FILE__, __LINE__, hr, true);
+    DXFW_TRACE(__FILE__, __LINE__, hr, true);
     return false;
   }
 
@@ -145,14 +157,14 @@ bool InitializeDirect3d11(dxfwWindow* window) {
   ID3D11Texture2D* back_buffer;
   hr = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
   if (FAILED(hr)) {
-    DirectXTrace(__FILE__, __LINE__, hr, true);
+    DXFW_TRACE(__FILE__, __LINE__, hr, true);
     return false;
   }
 
   // Create our Render Target
   hr = device->CreateRenderTargetView(back_buffer, NULL, &render_target_view);
   if (FAILED(hr)) {
-    DirectXTrace(__FILE__, __LINE__, hr, true);
+    DXFW_TRACE(__FILE__, __LINE__, hr, true);
     return false;
   }
 
