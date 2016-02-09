@@ -15,6 +15,22 @@ void dxfwTestRunSuccessfulWindowCreationTest(uintptr_t id, uint32_t width, uint3
   free(title_wide);
 }
 
+void RunSetCaptionTest(uintptr_t id, uint32_t width, uint32_t height, const char* title, const char* new_title) {
+  dxfwTestSetupAnyWindowCreateExpectations(id);
+  struct dxfwWindow* w = dxfwCreateWindow(width, height, title);
+
+  wchar_t* new_title_wide = dxfwTestUtf8ToWchar(new_title);
+  expect_value(SetWindowTextW, hWnd, (HWND)id);
+  expect_string(SetWindowTextW, lpString, new_title_wide);
+  will_return(SetWindowTextW, TRUE);
+  dxfwSetWindowCaption(w, new_title);
+
+  dxfwTestSetupWindowDestroyExpectations(id);
+  dxfwDestroyWindow(w);
+
+  free(new_title_wide);
+}
+
 /* MOCKS */
 void dxfwTestOnShouldCloseCallbackMock(struct dxfwWindow* window, bool should_close) {
   check_expected(window);
@@ -85,9 +101,23 @@ void dxfwCreateWindowWithNullTitleTest(void** state) {
   dxfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME);
 }
 
+void dxfwDestroyNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwDestroyWindow(NULL);
+}
+
 void dxfwGetHandleTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
   assert_ptr_equal(data->m_window_id_, dxfwGetHandle(data->m_window_));
+}
+
+void dxfwGetHandleForNullTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_ptr_equal(dxfwGetHandle(NULL), INVALID_HANDLE_VALUE);
 }
 
 void dxfwSetAndGetUserDataTest(void** state) {
@@ -104,20 +134,18 @@ void dxfwSetAndGetUserDataTest(void** state) {
   assert_ptr_equal(NULL, dxfwGetWindowUserData(data->m_window_));
 }
 
-void RunSetCaptionTest(uintptr_t id, uint32_t width, uint32_t height, const char* title, const char* new_title) {
-  dxfwTestSetupAnyWindowCreateExpectations(id);
-  struct dxfwWindow* w = dxfwCreateWindow(width, height, title);
+void dxfwSetNullWindowUserData(void** state) {
+  DXFW_TEST_UNUSED(state);
 
-  wchar_t* new_title_wide = dxfwTestUtf8ToWchar(new_title);
-  expect_value(SetWindowTextW, hWnd, (HWND)id);
-  expect_string(SetWindowTextW, lpString, new_title_wide);
-  will_return(SetWindowTextW, TRUE);
-  dxfwSetWindowCaption(w, new_title);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwSetWindowUserData(NULL, NULL);
+}
 
-  dxfwTestSetupWindowDestroyExpectations(id);
-  dxfwDestroyWindow(w);
+void dxfwGetNullWindowUserData(void** state) {
+  DXFW_TEST_UNUSED(state);
 
-  free(new_title_wide);
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_ptr_equal(dxfwGetWindowUserData(NULL), NULL);
 }
 
 void dxfwSetWindowCaptionTest(void** state) {
@@ -146,6 +174,20 @@ void dxfwSetEmptyWindowCaptionTest(void** state) {
   RunSetCaptionTest(WINDOW_ID, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME, WINDOW_NAME_NEW);
 }
 
+void dxfwSetNullWindowCaptionTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwSetWindowCaption(NULL, "Will not be set");
+}
+
+void dxfwSetWindowNullCaptionTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwSetWindowCaption(data->m_window_, NULL);
+}
+
 void dxfwGetWindowSizeTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
 
@@ -169,6 +211,34 @@ void dxfwGetWindowSizeTest(void** state) {
 
   assert_int_equal(client_rect.right - client_rect.left, width);
   assert_int_equal(client_rect.bottom - client_rect.top, height);
+}
+
+void dxfwGetWindowSizeNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  
+  uint32_t width;
+  uint32_t height;
+  dxfwGetWindowSize(NULL, &width, &height);
+}
+
+void dxfwGetWindowSizeNullWidthTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+
+  uint32_t height;
+  dxfwGetWindowSize(data->m_window_, NULL, &height);
+}
+
+void dxfwGetWindowSizeNullHeightTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+
+  uint32_t width;
+  dxfwGetWindowSize(data->m_window_, &width, NULL);
 }
 
 void dxfwSetWindowSizeTest(void** state) {
@@ -249,6 +319,13 @@ void dxfwSetWindowSizeToZeroHeightTest(void** state) {
   dxfwSetWindowSize(data->m_window_, NEW_WINDOW_WIDTH, NEW_WINDOW_HEIGHT);
 }
 
+void dxfwSetNullWindowSizeTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  dxfwSetWindowSize(NULL, 100, 200);
+}
+
 void dxfwShouldWindowCloseTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
 
@@ -275,6 +352,20 @@ void dxfwShouldWindowCloseTest(void** state) {
 
   // Tets if we should close
   assert_true(dxfwShouldWindowClose(data->m_window_));
+}
+
+void dxfwShouldWindowCloseNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_false(dxfwShouldWindowClose(NULL));
+}
+
+void dxfwShouldCloseChangedCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetShouldCloseChangedCallback(NULL, dxfwTestOnShouldCloseCallbackMock));
 }
 
 void dxfwPollOsEventsTest(void** state) {

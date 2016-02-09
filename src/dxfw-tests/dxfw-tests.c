@@ -106,7 +106,7 @@ void dxfwMemoryTest(void **state) {
 void dxfwSetAllocNullArguments(void **state) {
   DXFW_TEST_UNUSED(state);
 
-  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);  // Make sure no errors are reported
+  dxfwSetErrorCallback(dxfwTestErrorCallbackMock);
 
   expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
   dxfwSetAlloc(NULL, dxfwTestFreeMock);

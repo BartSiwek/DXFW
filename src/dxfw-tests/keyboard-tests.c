@@ -146,3 +146,10 @@ void dxfwKeyboardCallbackTest(void** state) {
   expect_value(dxfwTestOnKeyboardCallbackMock, prev_state, DXFW_KEY_STATE_DOWN);
   dxfwTestFireKeyUp(data->m_window_id_, D_WINDOWS_KEY);
 }
+
+void dxfwKeyboardCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetKeyboardCallback(NULL, dxfwTestOnKeyboardCallbackMock));
+}

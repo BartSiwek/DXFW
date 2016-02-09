@@ -54,8 +54,10 @@ int dxfwTestOsMocksTeardown();
 void dxfwInitTest(void **state);
 void dxfwDoubleInitTest(void **state);
 void dxfwNoInitTest(void **state);
+
 void dxfwMemoryTest(void **state);
 void dxfwSetAllocNullArguments(void **state);
+
 void dxfwNotInitializedTest(void **state);
 void dxfwGetTimeTest(void **state);
 
@@ -64,25 +66,51 @@ void dxfwCreateWindowWithZeroWidthTest(void** state);
 void dxfwCreateWindowWithZeroHeightTest(void** state);
 void dxfwCreateWindowWithEmptyTitleTest(void** state);
 void dxfwCreateWindowWithNullTitleTest(void** state);
+
+void dxfwDestroyNullWindowTest(void** state);
+
 void dxfwGetHandleTest(void** state);
+void dxfwGetHandleForNullTest(void** state);
+
 void dxfwSetAndGetUserDataTest(void** state);
+void dxfwSetNullWindowUserData(void** state);
+void dxfwGetNullWindowUserData(void** state);
 
 void dxfwSetWindowCaptionTest(void** state);
 void dxfwSetEmptyWindowCaptionTest(void** state);
+void dxfwSetNullWindowCaptionTest(void** state);
+void dxfwSetWindowNullCaptionTest(void** state);
+
 void dxfwGetWindowSizeTest(void** state);
+void dxfwGetWindowSizeNullWindowTest(void** state);
+void dxfwGetWindowSizeNullWidthTest(void** state);
+void dxfwGetWindowSizeNullHeightTest(void** state);
+
 void dxfwSetWindowSizeTest(void** state);
 void dxfwSetWindowSizeToZeroWidthTest(void** state);
 void dxfwSetWindowSizeToZeroHeightTest(void** state);
+void dxfwSetNullWindowSizeTest(void** state);
+
 void dxfwShouldWindowCloseTest(void** state);
+void dxfwShouldWindowCloseNullWindowTest(void** state);
+void dxfwShouldCloseChangedCallbackNullWindowTest(void** state);
+
 void dxfwPollOsEventsTest(void** state);
+
 void dxfwTwoWindowTest(void** state);
 
 void dxfwGetKeyStateTest(void** state);
 void dxfwGetModifierFlagsTest(void** state);
 void dxfwKeyboardCallbackTest(void** state);
+void dxfwKeyboardCallbackNullWindowTest(void** state);
 
 void dxfwSetMouseButtonCallbackTest(void** state);
+void dxfwSetMouseButtonCallbackNullWindowTest(void** state);
+
 void dxfwSetMouseMoveCallbackTest(void** state);
+void dxfwSetMouseMoveCallbackNullWindowTest(void** state);
+
 void dxfwSetMouseWheelCallbackTest(void** state);
+void dxfwSetMouseWheelCallbackNullWindowTest(void** state);
 
 #endif  // DXFW_TESTS_DXFW_TESTS_H_

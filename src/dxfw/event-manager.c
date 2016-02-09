@@ -14,6 +14,7 @@ dxfw_on_error dxfwSetErrorCallback(dxfw_on_error callback) {
 
 dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   dxfw_on_should_close_changed prev = window->m_on_should_close_changed_;
   window->m_on_should_close_changed_ = callback;
@@ -22,6 +23,7 @@ dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow
 
 dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   dxfw_on_mouse_button prev = window->m_on_mouse_button_;
   window->m_on_mouse_button_ = callback;
@@ -30,6 +32,7 @@ dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_
 
 dxfw_on_mouse_move dxfwSetMouseMoveCallback(struct dxfwWindow* window, dxfw_on_mouse_move callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   dxfw_on_mouse_move prev = window->m_on_mouse_move_;
   window->m_on_mouse_move_ = callback;
@@ -38,6 +41,7 @@ dxfw_on_mouse_move dxfwSetMouseMoveCallback(struct dxfwWindow* window, dxfw_on_m
 
 dxfw_on_mouse_wheel dxfwSetMouseWheelCallback(struct dxfwWindow* window, dxfw_on_mouse_wheel callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   dxfw_on_mouse_wheel prev = window->m_on_mouse_wheel_;
   window->m_on_mouse_wheel_ = callback;
@@ -46,6 +50,7 @@ dxfw_on_mouse_wheel dxfwSetMouseWheelCallback(struct dxfwWindow* window, dxfw_on
 
 dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyboard callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   dxfw_on_keyboard prev = window->m_on_keyboard_;
   window->m_on_keyboard_ = callback;

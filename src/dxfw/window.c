@@ -99,6 +99,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
 
 void dxfwDestroyWindow(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED();
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(window, NULL);
 
   struct dxfwWindow** current = &g_state_.m_windows_head_;
   while(*current != NULL && *current != window) {
@@ -113,24 +114,29 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
 
 HWND dxfwGetHandle(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(INVALID_HANDLE_VALUE);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, INVALID_HANDLE_VALUE);
 
   return window->m_handle_;
 }
 
 void dxfwSetWindowUserData(struct dxfwWindow* window, void* data) {
   DXFW_CHECK_IF_INITIALIZED();
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(window, NULL);
 
   window->m_user_data_ = data;
 }
 
 void* dxfwGetWindowUserData(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
 
   return window->m_user_data_;
 }
 
 void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
   DXFW_CHECK_IF_INITIALIZED();
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(window, NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(caption, NULL);
 
   WCHAR* converted_caption = dxfwUtf8ToWchar(caption);
   if (converted_caption == NULL) {
@@ -145,6 +151,9 @@ void dxfwSetWindowCaption(struct dxfwWindow* window, const char* caption) {
 
 void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* height) {
   DXFW_CHECK_IF_INITIALIZED();
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(window, NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(width, NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(height, NULL);
 
   RECT r;
   GetClientRect(window->m_handle_, &r);
@@ -154,13 +163,14 @@ void dxfwGetWindowSize(struct dxfwWindow* window, uint32_t* width, uint32_t* hei
 
 void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t height) {
   DXFW_CHECK_IF_INITIALIZED();
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL(window, NULL);
 
   if (width == 0 || height == 0) {
     dxfwReportError(DXFW_ERROR_INVALID_WINDOW_SIZE);
     return;
   }
 
-  // Get the current pos
+  // Get the current position
   RECT r;
   GetClientRect(window->m_handle_, &r);
 
@@ -180,6 +190,7 @@ void dxfwSetWindowSize(struct dxfwWindow* window, uint32_t width, uint32_t heigh
 
 bool dxfwShouldWindowClose(struct dxfwWindow* window) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(false);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, false);
 
   return window->m_should_close_;
 }

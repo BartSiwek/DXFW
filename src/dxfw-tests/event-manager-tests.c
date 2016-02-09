@@ -114,6 +114,13 @@ void dxfwSetMouseButtonCallbackTest(void** state) {
   dxfwTestRunMouseButtonTest(data, DXFW_MIDDLE_MOUSE_BUTTON, DXFW_MOUSE_BUTTON_UP, -706, -506);
 }
 
+void dxfwSetMouseButtonCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetMouseButtonCallback(NULL, dxfwTestOnMouseButtonCallbackMock));
+}
+
 void dxfwSetMouseMoveCallbackTest(void** state) {
   struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
 
@@ -125,6 +132,13 @@ void dxfwSetMouseMoveCallbackTest(void** state) {
   dxfwTestRunMouseMoveTest(data, -5, 202);
   dxfwTestRunMouseMoveTest(data, 103, -10);
   dxfwTestRunMouseMoveTest(data, -50, -20);
+}
+
+void dxfwSetMouseMoveCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetMouseMoveCallback(NULL, dxfwTestOnMouseMoveCallbackMock));
 }
 
 void dxfwSetMouseWheelCallbackTest(void** state) {
@@ -144,4 +158,9 @@ void dxfwSetMouseWheelCallbackTest(void** state) {
   dxfwTestRunMouseWheelTest(data, -50, -55, -60);
 }
 
+void dxfwSetMouseWheelCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
 
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetMouseWheelCallback(NULL, dxfwTestOnMouseWheelCallbackMock));
+}
