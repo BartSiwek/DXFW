@@ -13,6 +13,7 @@ extern "C" {
 #include <windows.h>
 #endif
 
+#include <dxfw/macros.h>
 #include <dxfw/enums.h>
 
 /* TYPEDEFS */
@@ -71,6 +72,11 @@ dxfwVirtualKeyState dxfwGetKeyState(dxfwVirtualKeyCode key_code);
 dxfwVirtualKeyState dxfwGetPreviousKeyState(dxfwVirtualKeyCode key_code);
 dxfwVirtualKeyModifiers dxfwGetModifierFlags();
 dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyboard callback);
+
+/* HELPERS */
+const char* dxfwErrorToString(dxfwError error);
+void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_box);
+void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box);
 
 #ifdef __cplusplus
 }

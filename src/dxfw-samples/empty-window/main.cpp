@@ -8,8 +8,7 @@
 #include <dxfw/dxfw.h>
 
 void ErrorCallback(dxfwError error) {
-  std::wstring error_message = std::to_wstring(error);
-  MessageBox(NULL, error_message.c_str(), L"DXFW Error", MB_OK);
+  DXFW_ERROR_TRACE(__FILE__, __LINE__, error, true);
 }
 
 int main(int /* argc */, char** /* argv */) {

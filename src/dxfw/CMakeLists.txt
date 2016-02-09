@@ -8,11 +8,13 @@ set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw")
 set(PROJECT_SRCS
   ${PROJECT_INCLUDE_DIR}/dxfw/dxfw.h
   ${PROJECT_INCLUDE_DIR}/dxfw/enums.h
+  ${PROJECT_INCLUDE_DIR}/dxfw/macros.h
   ${PROJECT_SOURCE_DIR}/dxfw-internal-macros.h
   ${PROJECT_SOURCE_DIR}/dxfw-internal-structs.h
   ${PROJECT_SOURCE_DIR}/dxfw-internal.h
   ${PROJECT_SOURCE_DIR}/dxfw.c
   ${PROJECT_SOURCE_DIR}/event-manager.c
+  ${PROJECT_SOURCE_DIR}/helpers.c
   ${PROJECT_SOURCE_DIR}/keyboard.c
   ${PROJECT_SOURCE_DIR}/window.c
 )

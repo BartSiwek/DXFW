@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.4)
 
 project(triangle VERSION 0.1 LANGUAGES CXX)
 
-include("${CMAKE_EXTRAS}/directx.cmake")
-
-if(NOT DEFINED DirectX_D3D11_FOUND)
-	message(WARNING "Direct3D 11 not found. The Triangle sample will not be built")
-	return()
-endif()
-
 set(PROJECT_INCLUDE_DIR "${ROOT_SOURCE_DIR}/dxfw-samples/triangle")
 set(PROJECT_SOURCE_DIR "${ROOT_SOURCE_DIR}/dxfw-samples/triangle")
 
