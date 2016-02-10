@@ -18,7 +18,8 @@ void* dxfwAlloc(size_t size);
 void dxfwDealloc(void* ptr);
 
 /* HELPER FUNCTIONS */
-WCHAR* dxfwUtf8ToWchar(const char* input);
+wchar_t* dxfwUtf8ToWchar(const char* input);
+char* dxfwWcharToUtf8(wchar_t* input);
 
 /* INIT & TERMINATE */
 void dxfwTerminateWindowHandling();

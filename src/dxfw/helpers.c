@@ -18,15 +18,41 @@ const char* g_error_to_string_[DXFW_ERROR_MAX] = {
 /***************************************/
 /*               FORWARDS              */
 /***************************************/
-void dxfwDoTrace(const TCHAR* message, const TCHAR* title, bool show_msg_box);
-TCHAR* dxfwHResultToString(HRESULT hr);
-TCHAR* dxfwFormatMessage(const TCHAR* format, DWORD_PTR* arguments);
+void dxfwDoTrace(const wchar_t* message, bool show_msg_box);
+wchar_t* dxfwHResultToStringInternal(HRESULT hr);
+wchar_t* dxfwFormatMessage(const wchar_t* format, DWORD_PTR* arguments);
 
 /***************************************/
 /*           PUBLIC INTERFACE          */
 /***************************************/
 const char* dxfwErrorToString(dxfwError error) {
   return g_error_to_string_[error];
+}
+
+char* dxfwHResultToString(HRESULT hr) {
+  wchar_t* message_wide = dxfwHResultToStringInternal(hr);
+
+  char* message = dxfwWcharToUtf8(message_wide);
+
+  LocalFree(message_wide);
+
+  return message;
+}
+
+void dxfwTraceMessage(const char* file, int line, const char* message, bool show_msg_box) {
+  wchar_t* message_wide = dxfwUtf8ToWchar(message);
+
+  if (message_wide != NULL) {
+    DWORD_PTR arguments[3];
+    arguments[0] = (DWORD_PTR)file;
+    arguments[1] = (DWORD_PTR)line;
+    arguments[2] = (DWORD_PTR)message_wide;
+    wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!.", arguments);
+
+    dxfwDoTrace(full_message, show_msg_box);
+
+    dxfwDealloc(message_wide);
+  }
 }
 
 void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_box) {
@@ -36,23 +62,23 @@ void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_b
   arguments[0] = (DWORD_PTR)file;
   arguments[1] = (DWORD_PTR)line;
   arguments[2] = (DWORD_PTR)error_message;
-  TCHAR* full_message = dxfwFormatMessage(TEXT("%1!S!(%2!lu!): %3!S!."), arguments);
+  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!S!.", arguments);
 
-  dxfwDoTrace(full_message, TEXT("DXFW Error Trace"), show_msg_box);
+  dxfwDoTrace(full_message, show_msg_box);
 
   LocalFree(full_message);
 }
 
 void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box) {
-  TCHAR* hresult_message = dxfwHResultToString(hr);
+  wchar_t* hresult_message = dxfwHResultToStringInternal(hr);
 
   DWORD_PTR arguments[3];
   arguments[0] = (DWORD_PTR)file;
   arguments[1] = (DWORD_PTR)line;
   arguments[2] = (DWORD_PTR)hresult_message;
-  TCHAR* full_message = dxfwFormatMessage(TEXT("%1!S!(%2!lu!): %3!s!."), arguments);
+  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!.", arguments);
 
-  dxfwDoTrace(full_message, TEXT("DXFW DirectX Trace"), show_msg_box);
+  dxfwDoTrace(full_message, show_msg_box);
 
   LocalFree(full_message);
   LocalFree(hresult_message);
@@ -61,33 +87,33 @@ void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box)
 /***************************************/
 /*             INTERNALS               */
 /***************************************/
-void dxfwDoTrace(const TCHAR* message, const TCHAR* title, bool show_msg_box) {
-  OutputDebugString(message);
+void dxfwDoTrace(const wchar_t* message, bool show_msg_box) {
+  OutputDebugStringW(message);
   if (show_msg_box) {
-    MessageBox(NULL, message, title, MB_OK);
+    MessageBoxW(NULL, message, L"DXFW", MB_OK);
   }
 
 }
 
-TCHAR* dxfwHResultToString(HRESULT hr) {
-  TCHAR* message = NULL;
-  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+wchar_t* dxfwHResultToStringInternal(HRESULT hr) {
+  wchar_t* message = NULL;
+  FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
     NULL,
     hr,
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-    (LPTSTR)&message,
+    (LPWSTR)&message,
     0,
     NULL);
   return message;
 }
 
-TCHAR* dxfwFormatMessage(const TCHAR* format, DWORD_PTR* arguments) {
-  TCHAR* message = NULL;
-  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+wchar_t* dxfwFormatMessage(const wchar_t* format, DWORD_PTR* arguments) {
+  wchar_t* message = NULL;
+  FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ARGUMENT_ARRAY,
     format,
     0,
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-    (LPTSTR)&message,
+    (LPWSTR)&message,
     0,
     (va_list*)arguments);
   return message;

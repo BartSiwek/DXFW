@@ -97,16 +97,34 @@ void dxfwInitializeTimer() {
   g_state_.m_timer_start_ = timestamp.QuadPart;
 }
 
-WCHAR* dxfwUtf8ToWchar(const char* input) {
+wchar_t* dxfwUtf8ToWchar(const char* input) {
   int length = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
 
   if (length == 0) {
     return NULL;
   }
 
-  WCHAR* result = (WCHAR*)dxfwAlloc(length * sizeof(WCHAR));
+  wchar_t* result = (wchar_t*)dxfwAlloc(length * sizeof(wchar_t));
 
   int conversion_result = MultiByteToWideChar(CP_UTF8, 0, input, -1, result, length);
+  if (conversion_result == 0) {
+    dxfwDealloc(result);
+    return NULL;
+  }
+
+  return result;
+}
+
+char* dxfwWcharToUtf8(wchar_t* input) {
+  int length = WideCharToMultiByte(CP_UTF8, 0, input, -1, NULL, 0, NULL, NULL);
+
+  if (length == 0) {
+    return NULL;
+  }
+
+  char* result = (char*)dxfwAlloc(length * sizeof(char));
+
+  int conversion_result = WideCharToMultiByte(CP_UTF8, 0, input, -1, result, length, NULL, NULL);
   if (conversion_result == 0) {
     dxfwDealloc(result);
     return NULL;
