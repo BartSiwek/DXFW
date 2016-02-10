@@ -161,9 +161,9 @@ bool InitializeDirect3d11(dxfwWindow* window, ID3D11Device** device, IDXGISwapCh
   return true;
 }
 
-bool InitializeScene(dxfwWindow* window, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11Buffer** triangle_vertex_buffer,
-                     ID3D11VertexShader** vs, ID3D11PixelShader** ps, ID3D10Blob** vs_buffer, ID3D10Blob** ps_buffer,
-                     ID3D11InputLayout** vertex_layout) {
+bool InitializeScene(dxfwWindow* /* window */, ID3D11Device* /* device */, ID3D11DeviceContext* /* device_context */, ID3D11Buffer** /* triangle_vertex_buffer */,
+                     ID3D11VertexShader** /* vs */, ID3D11PixelShader** /* ps */, ID3D10Blob** /* vs_buffer */, ID3D10Blob** /* ps_buffer */,
+                     ID3D11InputLayout** /* vertex_layout */) {
   /*
   HRESULT hr;
 
