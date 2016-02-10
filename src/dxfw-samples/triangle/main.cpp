@@ -5,6 +5,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <Shlwapi.h>
 #include <dxgi.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -161,35 +162,74 @@ bool InitializeDirect3d11(dxfwWindow* window, ID3D11Device** device, IDXGISwapCh
   return true;
 }
 
-bool InitializeScene(dxfwWindow* /* window */, ID3D11Device* /* device */, ID3D11DeviceContext* /* device_context */, ID3D11Buffer** /* triangle_vertex_buffer */,
-                     ID3D11VertexShader** /* vs */, ID3D11PixelShader** /* ps */, ID3D10Blob** /* vs_buffer */, ID3D10Blob** /* ps_buffer */,
-                     ID3D11InputLayout** /* vertex_layout */) {
-  /*
-  HRESULT hr;
+bool InitializeVertexShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11VertexShader** vs) {
+  Microsoft::WRL::ComPtr<ID3DBlob> error_blob;
 
-  // Compile shaders from shader file
-  hr = D3DCompileFromFile()
-  hr = D3DX11CompileFromFile(L"Source\\Effects.hlsl", 0, 0, "VS", "vs_4_0", 0, 0, 0, vs_buffer, 0, 0);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  TCHAR base_path[MAX_PATH];
+  GetModuleFileName(nullptr, base_path, MAX_PATH);
+  PathRemoveFileSpec(base_path);
+
+  TCHAR full_path[MAX_PATH];
+  PathCombine(full_path, base_path, TEXT("shaders.hlsl"));
+
+  HRESULT shader_compilation_result = D3DCompileFromFile(full_path, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS", "vs_4_0", 0, 0, buffer, error_blob.GetAddressOf());
+  if (FAILED(shader_compilation_result))
+  {
+    if (error_blob) {
+      OutputDebugStringA((const char*)error_blob->GetBufferPointer());
+    }
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_compilation_result, true);
     return false;
   }
 
-  hr = D3DX11CompileFromFile(L"Source\\Effects.hlsl", 0, 0, "PS", "ps_4_0", 0, 0, 0, ps_buffer, 0, 0);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  HRESULT shader_creation_result = device->CreateVertexShader((*buffer)->GetBufferPointer(), (*buffer)->GetBufferSize(), NULL, vs);
+  if (FAILED(shader_creation_result)) {
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_creation_result, true);
     return false;
   }
 
-  // Create the Shader Objects
-  hr = device->CreateVertexShader((*vs_buffer)->GetBufferPointer(), (*vs_buffer)->GetBufferSize(), NULL, vs);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  return true;
+}
+
+bool InitializePixelShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11PixelShader** ps) {
+  Microsoft::WRL::ComPtr<ID3DBlob> error_blob;
+
+  TCHAR base_path[MAX_PATH];
+  GetModuleFileName(nullptr, base_path, MAX_PATH);
+  PathRemoveFileSpec(base_path);
+
+  TCHAR full_path[MAX_PATH];
+  PathCombine(full_path, base_path, TEXT("shaders.hlsl"));
+
+  HRESULT shader_compilation_result = D3DCompileFromFile(full_path, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS", "ps_4_0", 0, 0, buffer, error_blob.GetAddressOf());
+  if (FAILED(shader_compilation_result))
+  {
+    if (error_blob) {
+      OutputDebugStringA((const char*)error_blob->GetBufferPointer());
+    }
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_compilation_result, true);
+    return false;
   }
 
-  hr = device->CreatePixelShader((*ps_buffer)->GetBufferPointer(), (*ps_buffer)->GetBufferSize(), NULL, ps);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  HRESULT shader_creation_result = device->CreatePixelShader((*buffer)->GetBufferPointer(), (*buffer)->GetBufferSize(), NULL, ps);
+  if (FAILED(shader_creation_result)) {
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_creation_result, true);
+    return false;
+  }
+
+  return true;
+}
+
+bool InitializeScene(dxfwWindow* window, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11Buffer** triangle_vertex_buffer,
+                     ID3DBlob** vs_buffer, ID3D11VertexShader** vs, ID3DBlob** ps_buffer, ID3D11PixelShader** ps, ID3D11InputLayout** vertex_layout) {
+  bool vs_ok = InitializeVertexShader(device, vs_buffer, vs);
+  if (!vs_ok) {
+    return false;
+  }
+
+  bool ps_ok = InitializePixelShader(device, ps_buffer, ps);
+  if (!ps_ok) {
+    return false;
   }
 
   // Set Vertex and Pixel Shaders
@@ -216,9 +256,9 @@ bool InitializeScene(dxfwWindow* /* window */, ID3D11Device* /* device */, ID3D1
 
   ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
   vertexBufferData.pSysMem = v;
-  hr = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, triangle_vertex_buffer);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  HRESULT create_vertex_buffer_result = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, triangle_vertex_buffer);
+  if (FAILED(create_vertex_buffer_result)) {
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_vertex_buffer_result, true);
   }
 
   // Set the vertex buffer
@@ -234,10 +274,9 @@ bool InitializeScene(dxfwWindow* /* window */, ID3D11Device* /* device */, ID3D1
   UINT layout_elements_count = 2;
 
   // Create the Input Layout
-  hr = device->CreateInputLayout(layout, layout_elements_count, (*vs_buffer)->GetBufferPointer(), (*vs_buffer)->GetBufferSize(),
-                                 vertex_layout);
-  if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+  HRESULT create_input_layout_result = device->CreateInputLayout(layout, layout_elements_count, (*vs_buffer)->GetBufferPointer(), (*vs_buffer)->GetBufferSize(), vertex_layout);
+  if (FAILED(create_input_layout_result)) {
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_input_layout_result, true);
   }
 
   // Set the Input Layout
@@ -261,7 +300,7 @@ bool InitializeScene(dxfwWindow* /* window */, ID3D11Device* /* device */, ID3D1
 
   // Set the viewport
   device_context->RSSetViewports(1, &viewport);
-  */
+
   return true;
 }
 
@@ -289,13 +328,13 @@ int main(int /* argc */, char** /* argv */) {
   }
 
   Microsoft::WRL::ComPtr<ID3D11Buffer> triangle_vertex_buffer;
+  Microsoft::WRL::ComPtr<ID3DBlob> vs_buffer;
+  Microsoft::WRL::ComPtr<ID3DBlob> ps_buffer;
   Microsoft::WRL::ComPtr<ID3D11VertexShader> vs;
   Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
-  Microsoft::WRL::ComPtr<ID3D10Blob> vs_buffer;
-  Microsoft::WRL::ComPtr<ID3D10Blob> ps_buffer;
   Microsoft::WRL::ComPtr<ID3D11InputLayout> vertex_layout;
-  bool scene_ok = InitializeScene(window.get(), device.Get(), device_context.Get(), triangle_vertex_buffer.GetAddressOf(), vs.GetAddressOf(),
-                                  ps.GetAddressOf(), vs_buffer.GetAddressOf(), ps_buffer.GetAddressOf(), vertex_layout.GetAddressOf());
+  bool scene_ok = InitializeScene(window.get(), device.Get(), device_context.Get(), triangle_vertex_buffer.GetAddressOf(), vs_buffer.GetAddressOf(), vs.GetAddressOf(),
+                                  ps_buffer.GetAddressOf(), ps.GetAddressOf(), vertex_layout.GetAddressOf());
   if (!scene_ok) {
     return -1;
   }
@@ -313,6 +352,8 @@ int main(int /* argc */, char** /* argv */) {
 
     dxfwPollOsEvents();
   }
+
+  device_context->ClearState();
 
   return 0;
 }

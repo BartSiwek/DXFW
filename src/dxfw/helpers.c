@@ -20,7 +20,7 @@ const char* g_error_to_string_[DXFW_ERROR_MAX] = {
 /***************************************/
 void dxfwDoTrace(const TCHAR* message, const TCHAR* title, bool show_msg_box);
 TCHAR* dxfwHResultToString(HRESULT hr);
-TCHAR* dxfwFormatMessage();
+TCHAR* dxfwFormatMessage(const TCHAR* format, DWORD_PTR* arguments);
 
 /***************************************/
 /*           PUBLIC INTERFACE          */
