@@ -58,12 +58,32 @@ struct Vertex {
   DirectX::XMFLOAT4 color;
 };
 
+struct DirectXState {
+  Microsoft::WRL::ComPtr<ID3D11Device> device;
+  Microsoft::WRL::ComPtr<IDXGISwapChain> swap_chain;
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view;
+};
+
+struct Scene {
+  Microsoft::WRL::ComPtr<ID3D11Buffer> triangle_vertex_buffer;
+  Microsoft::WRL::ComPtr<ID3DBlob> vs_buffer;
+  Microsoft::WRL::ComPtr<ID3DBlob> ps_buffer;
+  Microsoft::WRL::ComPtr<ID3D11VertexShader> vs;
+  Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
+  Microsoft::WRL::ComPtr<ID3D11InputLayout> vertex_layout;
+};
+
 void ErrorCallback(dxfwError error) {
   DXFW_ERROR_TRACE(__FILE__, __LINE__, error, true);
 }
 
-bool InitializeDeviceAndSwapChain(dxfwWindow* window, ID3D11Device** device, IDXGISwapChain** swap_chain,
-                                  ID3D11DeviceContext** device_context) {
+void GetBasePath(TCHAR* path) {
+  GetModuleFileName(nullptr, path, MAX_PATH);
+  PathRemoveFileSpec(path);
+}
+
+bool InitializeDeviceAndSwapChain(dxfwWindow* window, DirectXState* state) {
   // Device settings
   UINT create_device_flags = 0;
 #ifdef _DEBUG
@@ -111,7 +131,8 @@ bool InitializeDeviceAndSwapChain(dxfwWindow* window, ID3D11Device** device, IDX
     D3D_FEATURE_LEVEL result_feature_level;
     hr = D3D11CreateDeviceAndSwapChain(NULL, driver_type, NULL, create_device_flags, feature_levels,
       num_feature_levels, D3D11_SDK_VERSION, &swap_chain_desc,
-      swap_chain, device, &result_feature_level, device_context);
+      state->swap_chain.GetAddressOf(), state->device.GetAddressOf(),
+      &result_feature_level, state->device_context.GetAddressOf());
 
     if (SUCCEEDED(hr)) {
       break;
@@ -130,24 +151,23 @@ bool InitializeDeviceAndSwapChain(dxfwWindow* window, ID3D11Device** device, IDX
   return true;
 }
 
-bool InitializeDirect3d11(dxfwWindow* window, ID3D11Device** device, IDXGISwapChain** swap_chain, ID3D11DeviceContext** device_context,
-                          ID3D11RenderTargetView** render_target_view) {
+bool InitializeDirect3d11(dxfwWindow* window, DirectXState* state) {
   // Create device
-  bool device_ok = InitializeDeviceAndSwapChain(window, device, swap_chain, device_context);
+  bool device_ok = InitializeDeviceAndSwapChain(window, state);
   if (!device_ok) {
     return false;
   }
 
   // Create our BackBuffer
   ID3D11Texture2D* back_buffer;
-  auto back_buffer_result = (*swap_chain)->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
+  auto back_buffer_result = state->swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
   if (FAILED(back_buffer_result)) {
     DXFW_DIRECTX_TRACE(__FILE__, __LINE__, back_buffer_result, true);
     return false;
   }
 
   // Create our Render Target
-  auto rtv_result = (*device)->CreateRenderTargetView(back_buffer, NULL, render_target_view);
+  auto rtv_result = state->device->CreateRenderTargetView(back_buffer, NULL, state->render_target_view.GetAddressOf());
   if (FAILED(rtv_result)) {
     DXFW_DIRECTX_TRACE(__FILE__, __LINE__, rtv_result, true);
     return false;
@@ -157,17 +177,13 @@ bool InitializeDirect3d11(dxfwWindow* window, ID3D11Device** device, IDXGISwapCh
   back_buffer->Release();
 
   // Set our Render Target
-  (*device_context)->OMSetRenderTargets(1, render_target_view, NULL);
+  state->device_context->OMSetRenderTargets(1, state->render_target_view.GetAddressOf(), NULL);
 
   return true;
 }
 
-bool InitializeVertexShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11VertexShader** vs) {
+bool InitializeVertexShader(TCHAR* base_path, ID3D11Device* device, ID3DBlob** buffer, ID3D11VertexShader** vs) {
   Microsoft::WRL::ComPtr<ID3DBlob> error_blob;
-
-  TCHAR base_path[MAX_PATH];
-  GetModuleFileName(nullptr, base_path, MAX_PATH);
-  PathRemoveFileSpec(base_path);
 
   TCHAR full_path[MAX_PATH];
   PathCombine(full_path, base_path, TEXT("shaders.hlsl"));
@@ -191,12 +207,8 @@ bool InitializeVertexShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11Verte
   return true;
 }
 
-bool InitializePixelShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11PixelShader** ps) {
+bool InitializePixelShader(TCHAR* base_path, ID3D11Device* device, ID3DBlob** buffer, ID3D11PixelShader** ps) {
   Microsoft::WRL::ComPtr<ID3DBlob> error_blob;
-
-  TCHAR base_path[MAX_PATH];
-  GetModuleFileName(nullptr, base_path, MAX_PATH);
-  PathRemoveFileSpec(base_path);
 
   TCHAR full_path[MAX_PATH];
   PathCombine(full_path, base_path, TEXT("shaders.hlsl"));
@@ -220,23 +232,7 @@ bool InitializePixelShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11PixelS
   return true;
 }
 
-bool InitializeScene(dxfwWindow* window, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11Buffer** triangle_vertex_buffer,
-                     ID3DBlob** vs_buffer, ID3D11VertexShader** vs, ID3DBlob** ps_buffer, ID3D11PixelShader** ps, ID3D11InputLayout** vertex_layout) {
-  bool vs_ok = InitializeVertexShader(device, vs_buffer, vs);
-  if (!vs_ok) {
-    return false;
-  }
-
-  bool ps_ok = InitializePixelShader(device, ps_buffer, ps);
-  if (!ps_ok) {
-    return false;
-  }
-
-  // Set Vertex and Pixel Shaders
-  device_context->VSSetShader(*vs, 0, 0);
-  device_context->PSSetShader(*ps, 0, 0);
-
-  // Create the vertex buffer
+bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer** triangle_vertex_buffer) {
   Vertex v[] = {
     Vertex(0.0f,  0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f),
     Vertex(0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f),
@@ -253,53 +249,82 @@ bool InitializeScene(dxfwWindow* window, ID3D11Device* device, ID3D11DeviceConte
   vertexBufferDesc.MiscFlags = 0;
 
   D3D11_SUBRESOURCE_DATA vertexBufferData;
-
   ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
   vertexBufferData.pSysMem = v;
+
   HRESULT create_vertex_buffer_result = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, triangle_vertex_buffer);
+  
   if (FAILED(create_vertex_buffer_result)) {
     DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_vertex_buffer_result, true);
+    return false;
   }
 
-  // Set the vertex buffer
-  UINT stride = sizeof(Vertex);
-  UINT offset = 0;
-  device_context->IASetVertexBuffers(0, 1, triangle_vertex_buffer, &stride, &offset);
+  return true;
+}
 
-  // Layout description
+bool CreateInputLayout(ID3D11Device* device, ID3DBlob* vs_buffer, ID3D11InputLayout** vertex_layout) {
   D3D11_INPUT_ELEMENT_DESC layout[] = {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
   };
   UINT layout_elements_count = 2;
 
-  // Create the Input Layout
-  HRESULT create_input_layout_result = device->CreateInputLayout(layout, layout_elements_count, (*vs_buffer)->GetBufferPointer(), (*vs_buffer)->GetBufferSize(), vertex_layout);
+  HRESULT create_input_layout_result = device->CreateInputLayout(layout, layout_elements_count, vs_buffer->GetBufferPointer(), vs_buffer->GetBufferSize(), vertex_layout);
   if (FAILED(create_input_layout_result)) {
     DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_input_layout_result, true);
+    return false;
   }
 
-  // Set the Input Layout
-  device_context->IASetInputLayout(*vertex_layout);
+  return true;
+}
 
-  // Set Primitive Topology
-  device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-  // Create the viewport
-  D3D11_VIEWPORT viewport;
-  ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+void CreateViewport(dxfwWindow* window, D3D11_VIEWPORT* viewport) {
+  ZeroMemory(viewport, sizeof(D3D11_VIEWPORT));
 
   uint32_t width;
   uint32_t height;
   dxfwGetWindowSize(window, &width, &height);
 
-  viewport.TopLeftX = 0;
-  viewport.TopLeftY = 0;
-  viewport.Width = static_cast<float>(width);
-  viewport.Height = static_cast<float>(height);
+  viewport->TopLeftX = 0;
+  viewport->TopLeftY = 0;
+  viewport->Width = static_cast<float>(width);
+  viewport->Height = static_cast<float>(height);
+}
 
-  // Set the viewport
-  device_context->RSSetViewports(1, &viewport);
+bool InitializeScene(TCHAR* base_path, dxfwWindow* window, DirectXState* state, Scene* scene) {
+  bool vs_ok = InitializeVertexShader(base_path, state->device.Get(), scene->vs_buffer.GetAddressOf(), scene->vs.GetAddressOf());
+  if (!vs_ok) {
+    return false;
+  }
+
+  bool ps_ok = InitializePixelShader(base_path, state->device.Get(), scene->ps_buffer.GetAddressOf(), scene->ps.GetAddressOf());
+  if (!ps_ok) {
+    return false;
+  }
+
+  state->device_context->VSSetShader(scene->vs.Get(), 0, 0);
+  state->device_context->PSSetShader(scene->ps.Get(), 0, 0);
+
+  bool vb_ok = CreateVertexBuffer(state->device.Get(), scene->triangle_vertex_buffer.GetAddressOf());
+  if (!vb_ok) {
+    return false;
+  }
+
+  UINT stride = sizeof(Vertex);
+  UINT offset = 0;
+  state->device_context->IASetVertexBuffers(0, 1, scene->triangle_vertex_buffer.GetAddressOf(), &stride, &offset);
+
+  bool il_ok = CreateInputLayout(state->device.Get(), scene->vs_buffer.Get(), scene->vertex_layout.GetAddressOf());
+  if (!il_ok) {
+    return false;
+  }
+
+  state->device_context->IASetInputLayout(scene->vertex_layout.Get());
+  state->device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+  D3D11_VIEWPORT viewport;
+  CreateViewport(window, &viewport);
+  state->device_context->RSSetViewports(1, &viewport);
 
   return true;
 }
@@ -310,6 +335,9 @@ int main(int /* argc */, char** /* argv */) {
     return -1;
   }
 
+  TCHAR base_path[MAX_PATH];
+  GetBasePath(base_path);
+
   dxfwSetErrorCallback(ErrorCallback);
 
   std::unique_ptr<dxfwWindow, DxfwWindowDeleter> window(dxfwCreateWindow(800, 600, "Hello DirectX"));
@@ -317,24 +345,14 @@ int main(int /* argc */, char** /* argv */) {
     return -1;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device> device;
-  Microsoft::WRL::ComPtr<IDXGISwapChain> swap_chain;
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
-  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view;
-  bool direct3d11_ok = InitializeDirect3d11(window.get(), device.GetAddressOf(), swap_chain.GetAddressOf(), device_context.GetAddressOf(),
-                                            render_target_view.GetAddressOf());
+  DirectXState state;
+  bool direct3d11_ok = InitializeDirect3d11(window.get(), &state);
   if (!direct3d11_ok) {
     return -1;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Buffer> triangle_vertex_buffer;
-  Microsoft::WRL::ComPtr<ID3DBlob> vs_buffer;
-  Microsoft::WRL::ComPtr<ID3DBlob> ps_buffer;
-  Microsoft::WRL::ComPtr<ID3D11VertexShader> vs;
-  Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
-  Microsoft::WRL::ComPtr<ID3D11InputLayout> vertex_layout;
-  bool scene_ok = InitializeScene(window.get(), device.Get(), device_context.Get(), triangle_vertex_buffer.GetAddressOf(), vs_buffer.GetAddressOf(), vs.GetAddressOf(),
-                                  ps_buffer.GetAddressOf(), ps.GetAddressOf(), vertex_layout.GetAddressOf());
+  Scene scene;
+  bool scene_ok = InitializeScene(base_path, window.get(), &state, &scene);
   if (!scene_ok) {
     return -1;
   }
@@ -342,18 +360,18 @@ int main(int /* argc */, char** /* argv */) {
   while (!dxfwShouldWindowClose(window.get())) {
     // Clear
     float bgColor[4] = { (0.0f, 0.0f, 0.0f, 0.0f) };
-    device_context->ClearRenderTargetView(render_target_view.Get(), bgColor);
+    state.device_context->ClearRenderTargetView(state.render_target_view.Get(), bgColor);
 
     // Render
-    device_context->Draw(3, 0);
+    state.device_context->Draw(3, 0);
 
     // Swap buffers
-    swap_chain->Present(0, 0);
+    state.swap_chain->Present(0, 0);
 
     dxfwPollOsEvents();
   }
 
-  device_context->ClearState();
+  state.device_context->ClearState();
 
   return 0;
 }
