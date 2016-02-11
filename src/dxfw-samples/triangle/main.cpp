@@ -205,7 +205,7 @@ bool InitializePixelShader(ID3D11Device* device, ID3DBlob** buffer, ID3D11PixelS
   if (FAILED(shader_compilation_result))
   {
     if (error_blob) {
-      OutputDebugStringA((const char*)error_blob->GetBufferPointer());
+      DXFW_TRACE(__FILE__, __LINE__, (const char*)error_blob->GetBufferPointer(), false);
     }
     DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_compilation_result, true);
     return false;

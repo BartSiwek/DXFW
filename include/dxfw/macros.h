@@ -25,6 +25,16 @@ extern "C" {
 #endif
 #endif
 
+#if defined(DEBUG) | defined(_DEBUG)
+#ifndef DXFW_TRACE
+#define DXFW_TRACE(FILE, LINE, MSG, MSG_BOX) dxfwTraceMessage(FILE, LINE, MSG, MSG_BOX)
+#endif
+#else
+#ifndef DXFW_TRACE
+#define DXFW_TRACE(FILE, LINE, MSG, MSG_BOX) (void)(FILE); (void)(LINE); (void)(MSG); (void)(MSG_BOX)
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif

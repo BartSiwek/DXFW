@@ -19,7 +19,7 @@ const char* g_error_to_string_[DXFW_ERROR_MAX] = {
 /*               FORWARDS              */
 /***************************************/
 void dxfwDoTrace(const wchar_t* message, bool show_msg_box);
-wchar_t* dxfwHResultToStringInternal(HRESULT hr);
+wchar_t* dxfwFormatHResult(HRESULT hr);
 wchar_t* dxfwFormatMessage(const wchar_t* format, DWORD_PTR* arguments);
 
 /***************************************/
@@ -30,7 +30,7 @@ const char* dxfwErrorToString(dxfwError error) {
 }
 
 char* dxfwHResultToString(HRESULT hr) {
-  wchar_t* message_wide = dxfwHResultToStringInternal(hr);
+  wchar_t* message_wide = dxfwFormatHResult(hr);
 
   char* message = dxfwWcharToUtf8(message_wide);
 
@@ -70,7 +70,7 @@ void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_b
 }
 
 void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box) {
-  wchar_t* hresult_message = dxfwHResultToStringInternal(hr);
+  wchar_t* hresult_message = dxfwFormatHResult(hr);
 
   DWORD_PTR arguments[3];
   arguments[0] = (DWORD_PTR)file;
@@ -95,7 +95,7 @@ void dxfwDoTrace(const wchar_t* message, bool show_msg_box) {
 
 }
 
-wchar_t* dxfwHResultToStringInternal(HRESULT hr) {
+wchar_t* dxfwFormatHResult(HRESULT hr) {
   wchar_t* message = NULL;
   FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
     NULL,
