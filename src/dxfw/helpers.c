@@ -47,7 +47,7 @@ void dxfwTraceMessage(const char* file, int line, const char* message, bool show
     arguments[0] = (DWORD_PTR)file;
     arguments[1] = (DWORD_PTR)line;
     arguments[2] = (DWORD_PTR)message_wide;
-    wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!.", arguments);
+    wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!", arguments);
 
     dxfwDoTrace(full_message, show_msg_box);
 
@@ -62,7 +62,7 @@ void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_b
   arguments[0] = (DWORD_PTR)file;
   arguments[1] = (DWORD_PTR)line;
   arguments[2] = (DWORD_PTR)error_message;
-  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!S!.", arguments);
+  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!S!", arguments);
 
   dxfwDoTrace(full_message, show_msg_box);
 
@@ -76,7 +76,7 @@ void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box)
   arguments[0] = (DWORD_PTR)file;
   arguments[1] = (DWORD_PTR)line;
   arguments[2] = (DWORD_PTR)hresult_message;
-  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!.", arguments);
+  wchar_t* full_message = dxfwFormatMessage(L"%1!S!(%2!lu!): %3!s!", arguments);
 
   dxfwDoTrace(full_message, show_msg_box);
 
