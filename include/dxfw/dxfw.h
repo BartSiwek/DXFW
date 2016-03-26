@@ -21,6 +21,7 @@ typedef void*(*dxfw_alloc_function)(size_t);
 typedef void(*dxfw_dealloc_function)(void*);
 typedef void(*dxfw_on_error)(dxfwError);
 typedef void(*dxfw_on_should_close_changed)(struct dxfwWindow*, bool);
+typedef void(*dxfw_on_size_changed)(struct dxfwWindow*, uint32_t, uint32_t);
 typedef void(*dxfw_on_mouse_button)(struct dxfwWindow*, dxfwMouseButton, dxfwMouseButtonAction, int16_t, int16_t);
 typedef void(*dxfw_on_mouse_move)(struct dxfwWindow*, int16_t, int16_t);
 typedef void(*dxfw_on_mouse_wheel)(struct dxfwWindow*, int16_t, int16_t, int16_t);
@@ -61,6 +62,9 @@ void dxfwPollOsEvents();
 
 /* SHOULD CLOSE EVENT */
 dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow* window, dxfw_on_should_close_changed callback);
+
+/* SIZE CHANGED EVENT */
+dxfw_on_size_changed dxfwSetSizeChangedCallback(struct dxfwWindow* window, dxfw_on_size_changed callback);
 
 /* MOUSE EVENTS */
 dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback);

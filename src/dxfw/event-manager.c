@@ -21,6 +21,15 @@ dxfw_on_should_close_changed dxfwSetShouldCloseChangedCallback(struct dxfwWindow
   return prev;
 }
 
+dxfw_on_size_changed dxfwSetSizeChangedCallback(struct dxfwWindow* window, dxfw_on_size_changed callback) {
+  DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
+  DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
+
+  dxfw_on_size_changed prev = window->m_on_size_changed_;
+  window->m_on_size_changed_ = callback;
+  return prev;
+}
+
 dxfw_on_mouse_button dxfwSetMouseButtonCallback(struct dxfwWindow* window, dxfw_on_mouse_button callback) {
   DXFW_CHECK_IF_INITIALIZED_AND_RETURN(NULL);
   DXFW_CHECK_ARGUMENT_NOT_EQUAL_AND_RETURN(window, NULL, NULL);
@@ -73,6 +82,18 @@ void dxfwFireWindowClosedEvent(HWND hwnd) {
     if (window->m_on_should_close_changed_ != NULL) {
       (*window->m_on_should_close_changed_)(window, window->m_should_close_);
     }
+  }
+}
+
+#include <assert.h>
+
+void dxfwFireSizeChangedEvent(HWND hwnd, LPARAM lparam) {
+  struct dxfwWindow* window = dxfwFindWindow(hwnd);
+  if (window != NULL && window->m_on_size_changed_ != NULL) {
+    uint32_t width = LOWORD(lparam);
+    uint32_t height = HIWORD(lparam);
+
+    (*window->m_on_size_changed_)(window, width, height);
   }
 }
 

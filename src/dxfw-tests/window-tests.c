@@ -37,6 +37,12 @@ void dxfwTestOnShouldCloseCallbackMock(struct dxfwWindow* window, bool should_cl
   check_expected(should_close);
 }
 
+void dxfwTestOnSizeChangedCallbackMock(struct dxfwWindow* window, uint32_t width, uint32_t height) {
+  check_expected(window);
+  check_expected(width);
+  check_expected(height);
+}
+
 /* TESTS */
 void dxfwCreateDestroyWindowTest(void** state) {
   DXFW_TEST_UNUSED(state);
@@ -366,6 +372,118 @@ void dxfwShouldCloseChangedCallbackNullWindowTest(void** state) {
 
   expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
   assert_null(dxfwSetShouldCloseChangedCallback(NULL, dxfwTestOnShouldCloseCallbackMock));
+}
+
+void dxfwWindowSizeChangedTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  // Test const
+  const uint32_t NEW_WIDTH = 118;
+  const uint32_t NEW_HEIGHT = 218;
+  const UINT MESSAGE = WM_SIZE;
+  const LPARAM LPARAM_VALUE = MAKELPARAM(NEW_WIDTH, NEW_HEIGHT);
+  const WPARAM WPARAM_VALUE = SIZE_RESTORED;
+
+  // Set callback
+  assert_null(dxfwSetSizeChangedCallback(data->m_window_, dxfwTestOnSizeChangedCallbackMock));
+  expect_value(dxfwTestOnSizeChangedCallbackMock, window, data->m_window_);
+  expect_value(dxfwTestOnSizeChangedCallbackMock, width, NEW_WIDTH);
+  expect_value(dxfwTestOnSizeChangedCallbackMock, height, NEW_HEIGHT);
+
+  // Setup OS message flow
+  dxfwTestSetupPeekMessage((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwSetupDefWindowProc((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwTestSetupLastPeekMessage();
+
+  // Trigger
+  dxfwPollOsEvents();
+}
+
+void dxfwWindowMinimizedTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  // Test const
+  const UINT MESSAGE = WM_SIZE;
+  const LPARAM LPARAM_VALUE = 0;
+  const WPARAM WPARAM_VALUE = SIZE_MINIMIZED;
+
+  // Set callback
+  assert_null(dxfwSetSizeChangedCallback(data->m_window_, dxfwTestOnSizeChangedCallbackMock));
+
+  // Setup OS message flow
+  dxfwTestSetupPeekMessage((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwSetupDefWindowProc((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwTestSetupLastPeekMessage();
+
+  // Trigger
+  dxfwPollOsEvents();
+}
+
+void dxfwWindowMaxShowTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  // Test const
+  const UINT MESSAGE = WM_SIZE;
+  const LPARAM LPARAM_VALUE = 0;
+  const WPARAM WPARAM_VALUE = SIZE_MAXSHOW;
+
+  // Set callback
+  assert_null(dxfwSetSizeChangedCallback(data->m_window_, dxfwTestOnSizeChangedCallbackMock));
+
+  // Setup OS message flow
+  dxfwTestSetupPeekMessage((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwSetupDefWindowProc((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwTestSetupLastPeekMessage();
+
+  // Trigger
+  dxfwPollOsEvents();
+}
+
+void dxfwWindowMaximizedTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  // Test const
+  const UINT MESSAGE = WM_SIZE;
+  const LPARAM LPARAM_VALUE = 0;
+  const WPARAM WPARAM_VALUE = SIZE_MAXIMIZED;
+
+  // Set callback
+  assert_null(dxfwSetSizeChangedCallback(data->m_window_, dxfwTestOnSizeChangedCallbackMock));
+
+  // Setup OS message flow
+  dxfwTestSetupPeekMessage((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwSetupDefWindowProc((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwTestSetupLastPeekMessage();
+
+  // Trigger
+  dxfwPollOsEvents();
+}
+
+void dxfwWindowMaxHideTest(void** state) {
+  struct dxfwTestSingleWindowTestData* data = (struct dxfwTestSingleWindowTestData*)(*state);
+
+  // Test const
+  const UINT MESSAGE = WM_SIZE;
+  const LPARAM LPARAM_VALUE = 0;
+  const WPARAM WPARAM_VALUE = SIZE_MAXHIDE;
+
+  // Set callback
+  assert_null(dxfwSetSizeChangedCallback(data->m_window_, dxfwTestOnSizeChangedCallbackMock));
+
+  // Setup OS message flow
+  dxfwTestSetupPeekMessage((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwSetupDefWindowProc((HWND)data->m_window_id_, MESSAGE, LPARAM_VALUE, WPARAM_VALUE);
+  dxfwTestSetupLastPeekMessage();
+
+  // Trigger
+  dxfwPollOsEvents();
+}
+
+void dxfwSizeChangedCallbackNullWindowTest(void** state) {
+  DXFW_TEST_UNUSED(state);
+
+  expect_value(dxfwTestErrorCallbackMock, error, DXFW_ERROR_INVALID_ARGUMENT);
+  assert_null(dxfwSetSizeChangedCallback(NULL, dxfwTestOnSizeChangedCallbackMock));
 }
 
 void dxfwPollOsEventsTest(void** state) {

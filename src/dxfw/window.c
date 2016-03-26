@@ -78,6 +78,7 @@ struct dxfwWindow* dxfwCreateWindow(uint32_t width, uint32_t height, const char*
   window->m_user_data_ = NULL;
 
   window->m_on_should_close_changed_ = NULL;
+  window->m_on_size_changed_ = NULL;
   window->m_on_mouse_button_ = NULL;
   window->m_on_mouse_move_ = NULL;
   window->m_on_mouse_wheel_ = NULL;
@@ -255,7 +256,9 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
       break;
     }
     case WM_SIZE: {
-      // dxfwFireWindowResizedEvent(hwnd, wparam, lparam);
+      if (wparam == SIZE_RESTORED) {
+        dxfwFireSizeChangedEvent(hwnd, lparam);
+      }
       break;
     }
     case WM_LBUTTONUP: {

@@ -95,6 +95,13 @@ void dxfwShouldWindowCloseTest(void** state);
 void dxfwShouldWindowCloseNullWindowTest(void** state);
 void dxfwShouldCloseChangedCallbackNullWindowTest(void** state);
 
+void dxfwWindowSizeChangedTest(void** state);
+void dxfwWindowMinimizedTest(void** state);
+void dxfwWindowMaxShowTest(void** state);
+void dxfwWindowMaximizedTest(void** state);
+void dxfwWindowMaxHideTest(void** state);
+void dxfwSizeChangedCallbackNullWindowTest(void** state);
+
 void dxfwPollOsEventsTest(void** state);
 
 void dxfwTwoWindowTest(void** state);

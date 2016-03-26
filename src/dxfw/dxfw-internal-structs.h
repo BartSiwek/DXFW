@@ -20,6 +20,7 @@ struct dxfwWindow {
 
   // Events
   dxfw_on_should_close_changed m_on_should_close_changed_;
+  dxfw_on_size_changed m_on_size_changed_;
   dxfw_on_mouse_button m_on_mouse_button_;
   dxfw_on_mouse_move m_on_mouse_move_;
   dxfw_on_mouse_wheel m_on_mouse_wheel_;

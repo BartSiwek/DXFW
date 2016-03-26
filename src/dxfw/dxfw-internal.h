@@ -30,6 +30,7 @@ struct dxfwWindow* dxfwFindWindow(HWND hwnd);
 /* EVENT MANAGEMENT */
 void dxfwReportError(dxfwError error);
 void dxfwFireWindowClosedEvent(HWND hwnd);
+void dxfwFireSizeChangedEvent(HWND hwnd, LPARAM lparam);
 void dxfwFireMouseEvent(HWND hwnd, dxfwMouseButton button, dxfwMouseButtonAction action, LPARAM lparam);
 void dxfwFireMouseMoveEvent(HWND hwnd, LPARAM lparam);
 void dxfwFireMouseWheelEvent(HWND hwnd, WPARAM wparam, LPARAM lparam);
