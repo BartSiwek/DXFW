@@ -9,13 +9,13 @@
 #include <dxfw/dxfw.h>
 
 void ErrorCallback(dxfwError error) {
-  DXFW_ERROR_TRACE(__FILE__, __LINE__, error, true);
+  DXFW_ERROR_TRACE(__FILE__, __LINE__, true, error);
 }
 
 void ResizeCallback(dxfwWindow* /* window */, uint32_t width, uint32_t height) {
   std::stringstream ss;
   ss << "New size: " << width << " x " << height << std::endl;
-  DXFW_TRACE(__FILE__, __LINE__, ss.str().c_str(), false);
+  DXFW_TRACE(__FILE__, __LINE__, false, ss.str().c_str());
 }
 
 int main(int /* argc */, char** /* argv */) {

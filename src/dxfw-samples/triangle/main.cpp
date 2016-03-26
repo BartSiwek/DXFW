@@ -75,7 +75,7 @@ struct Scene {
 };
 
 void ErrorCallback(dxfwError error) {
-  DXFW_ERROR_TRACE(__FILE__, __LINE__, error, true);
+  DXFW_ERROR_TRACE(__FILE__, __LINE__, true, error);
 }
 
 void GetBasePath(TCHAR* path) {
@@ -139,12 +139,12 @@ bool InitializeDeviceAndSwapChain(dxfwWindow* window, DirectXState* state) {
     }
 
     if (FAILED(hr)) {
-      DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, false);
+      DXFW_DIRECTX_TRACE(__FILE__, __LINE__, false, hr);
     }
   }
 
   if (FAILED(hr)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, hr, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, hr);
     return false;
   }
 
@@ -162,14 +162,14 @@ bool InitializeDirect3d11(dxfwWindow* window, DirectXState* state) {
   ID3D11Texture2D* back_buffer;
   auto back_buffer_result = state->swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
   if (FAILED(back_buffer_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, back_buffer_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, back_buffer_result);
     return false;
   }
 
   // Create our Render Target
   auto rtv_result = state->device->CreateRenderTargetView(back_buffer, NULL, state->render_target_view.GetAddressOf());
   if (FAILED(rtv_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, rtv_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, rtv_result);
     return false;
   }
 
@@ -194,13 +194,13 @@ bool InitializeVertexShader(TCHAR* base_path, ID3D11Device* device, ID3DBlob** b
     if (error_blob) {
       OutputDebugStringA((const char*)error_blob->GetBufferPointer());
     }
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_compilation_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, shader_compilation_result);
     return false;
   }
 
   HRESULT shader_creation_result = device->CreateVertexShader((*buffer)->GetBufferPointer(), (*buffer)->GetBufferSize(), NULL, vs);
   if (FAILED(shader_creation_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_creation_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, shader_creation_result);
     return false;
   }
 
@@ -217,15 +217,15 @@ bool InitializePixelShader(TCHAR* base_path, ID3D11Device* device, ID3DBlob** bu
   if (FAILED(shader_compilation_result))
   {
     if (error_blob) {
-      DXFW_TRACE(__FILE__, __LINE__, (const char*)error_blob->GetBufferPointer(), false);
+      DXFW_TRACE(__FILE__, __LINE__, false, (const char*)error_blob->GetBufferPointer());
     }
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_compilation_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, shader_compilation_result);
     return false;
   }
 
   HRESULT shader_creation_result = device->CreatePixelShader((*buffer)->GetBufferPointer(), (*buffer)->GetBufferSize(), NULL, ps);
   if (FAILED(shader_creation_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, shader_creation_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, shader_creation_result);
     return false;
   }
 
@@ -255,7 +255,7 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer** triangle_vertex_buf
   HRESULT create_vertex_buffer_result = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, triangle_vertex_buffer);
   
   if (FAILED(create_vertex_buffer_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_vertex_buffer_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, create_vertex_buffer_result);
     return false;
   }
 
@@ -271,7 +271,7 @@ bool CreateInputLayout(ID3D11Device* device, ID3DBlob* vs_buffer, ID3D11InputLay
 
   HRESULT create_input_layout_result = device->CreateInputLayout(layout, layout_elements_count, vs_buffer->GetBufferPointer(), vs_buffer->GetBufferSize(), vertex_layout);
   if (FAILED(create_input_layout_result)) {
-    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, create_input_layout_result, true);
+    DXFW_DIRECTX_TRACE(__FILE__, __LINE__, true, create_input_layout_result);
     return false;
   }
 

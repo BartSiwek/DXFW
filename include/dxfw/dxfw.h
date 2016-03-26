@@ -80,9 +80,9 @@ dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyb
 /* HELPERS */
 const char* dxfwErrorToString(dxfwError error);
 char* dxfwHResultToString(HRESULT hr);
-void dxfwTraceMessage(const char* file, int line, const char* message, bool show_msg_box);
-void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_box);
-void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box);
+void dxfwTraceMessage(const char* file, int line, bool show_msg_box, const char* message, ...);
+void dxfwTraceError(const char* file, int line, bool show_msg_box, dxfwError error);
+void dxfwTraceHResult(const char* file, int line, bool show_msg_box, HRESULT hr);
 
 #ifdef __cplusplus
 }

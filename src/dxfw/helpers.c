@@ -39,7 +39,7 @@ char* dxfwHResultToString(HRESULT hr) {
   return message;
 }
 
-void dxfwTraceMessage(const char* file, int line, const char* message, bool show_msg_box) {
+void dxfwTraceMessage(const char* file, int line, bool show_msg_box, const char* message, ...) {
   wchar_t* message_wide = dxfwUtf8ToWchar(message);
 
   if (message_wide != NULL) {
@@ -55,7 +55,7 @@ void dxfwTraceMessage(const char* file, int line, const char* message, bool show
   }
 }
 
-void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_box) {
+void dxfwTraceError(const char* file, int line, bool show_msg_box, dxfwError error) {
   const char* error_message = dxfwErrorToString(error);
 
   DWORD_PTR arguments[3];
@@ -69,7 +69,7 @@ void dxfwTraceError(const char* file, int line, dxfwError error, bool show_msg_b
   LocalFree(full_message);
 }
 
-void dxfwTraceHResult(const char* file, int line, HRESULT hr, bool show_msg_box) {
+void dxfwTraceHResult(const char* file, int line, bool show_msg_box, HRESULT hr) {
   wchar_t* hresult_message = dxfwFormatHResult(hr);
 
   DWORD_PTR arguments[3];
