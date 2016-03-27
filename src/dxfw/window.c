@@ -109,8 +109,8 @@ void dxfwDestroyWindow(struct dxfwWindow* window) {
   if(*current != NULL) {
     DestroyWindow((*current)->m_handle_);
     *current = window->m_next_;
+    dxfwDealloc(window);
   }
-  dxfwDealloc(window);
 }
 
 HWND dxfwGetHandle(struct dxfwWindow* window) {
