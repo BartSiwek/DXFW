@@ -97,36 +97,36 @@ void dxfwInitializeTimer() {
   g_state_.m_timer_start_ = timestamp.QuadPart;
 }
 
-wchar_t* dxfwUtf8ToWchar(const char* input) {
+wchar_t* dxfwUtf8ToWchar(const char* input, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
   int length = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
 
   if (length == 0) {
     return NULL;
   }
 
-  wchar_t* result = (wchar_t*)dxfwAlloc(length * sizeof(wchar_t));
+  wchar_t* result = (wchar_t*)alloc(length * sizeof(wchar_t));
 
   int conversion_result = MultiByteToWideChar(CP_UTF8, 0, input, -1, result, length);
   if (conversion_result == 0) {
-    dxfwDealloc(result);
+    dealloc(result);
     return NULL;
   }
 
   return result;
 }
 
-char* dxfwWcharToUtf8(wchar_t* input) {
+char* dxfwWcharToUtf8(wchar_t* input, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc) {
   int length = WideCharToMultiByte(CP_UTF8, 0, input, -1, NULL, 0, NULL, NULL);
 
   if (length == 0) {
     return NULL;
   }
 
-  char* result = (char*)dxfwAlloc(length * sizeof(char));
+  char* result = (char*)alloc(length * sizeof(char));
 
   int conversion_result = WideCharToMultiByte(CP_UTF8, 0, input, -1, result, length, NULL, NULL);
   if (conversion_result == 0) {
-    dxfwDealloc(result);
+    dealloc(result);
     return NULL;
   }
 

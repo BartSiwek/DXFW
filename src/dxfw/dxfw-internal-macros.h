@@ -9,19 +9,9 @@
         return;                                                                   \
     }
 
-#define DXFW_CHECK_IF_INITIALIZED_DONT_REPORT_ERROR()                             \
-    if (!g_state_.m_initialized_) {                                               \
-        return;                                                                   \
-    }
-
 #define DXFW_CHECK_IF_INITIALIZED_AND_RETURN(x)                                   \
     if (!g_state_.m_initialized_) {                                               \
         dxfwReportError(DXFW_ERROR_NOT_INITIALIZED);                              \
-        return x;                                                                 \
-    }
-
-#define DXFW_CHECK_IF_INITIALIZED_DONT_REPORT_ERROR_AND_RETURN(x)                 \
-    if (!g_state_.m_initialized_) {                                               \
         return x;                                                                 \
     }
 

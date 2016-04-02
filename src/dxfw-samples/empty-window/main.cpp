@@ -19,7 +19,6 @@ int main(int /* argc */, char** /* argv */) {
   if (!dxfwInitialize()) {
     return -1;
   }
-
   dxfwSetErrorCallback(ErrorCallback);
 
   auto window = dxfwCreateWindow(640, 480, "Hello Windows");

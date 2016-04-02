@@ -79,10 +79,10 @@ dxfw_on_keyboard dxfwSetKeyboardCallback(struct dxfwWindow* window, dxfw_on_keyb
 
 /* HELPERS */
 const char* dxfwErrorToString(dxfwError error);
-char* dxfwHResultToString(HRESULT hr);
-void dxfwTraceMessage(const char* file, int line, bool show_msg_box, const char* message, ...);
-void dxfwTraceError(const char* file, int line, bool show_msg_box, dxfwError error);
-void dxfwTraceHResult(const char* file, int line, bool show_msg_box, HRESULT hr);
+char* dxfwHResultToString(HRESULT hr, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc);
+void dxfwTraceMessage(const char* file, int line, bool show_msg_box, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc, const char* message, ...);
+void dxfwTraceError(const char* file, int line, bool show_msg_box, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc, dxfwError error);
+void dxfwTraceHResult(const char* file, int line, bool show_msg_box, dxfw_alloc_function alloc, dxfw_dealloc_function dealloc, HRESULT hr);
 
 #ifdef __cplusplus
 }
