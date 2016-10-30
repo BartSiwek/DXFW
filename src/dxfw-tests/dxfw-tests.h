@@ -60,6 +60,7 @@ void dxfwSetAllocNullArguments(void **state);
 
 void dxfwNotInitializedTest(void **state);
 void dxfwGetTimeTest(void **state);
+void dxfwTraceWithEmprtyArgumentListTest(void **state);
 
 void dxfwCreateDestroyWindowTest(void **state);
 void dxfwCreateWindowWithZeroWidthTest(void** state);

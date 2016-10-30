@@ -9,6 +9,7 @@ int main() {
     cmocka_unit_test(dxfwSetAllocNullArguments),
     cmocka_unit_test_setup_teardown(dxfwNotInitializedTest, dxfwNotInitializedTestSetup, dxfwNotInitializedTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwGetTimeTest, dxfwInitializedTestSetup, dxfwInitializedTestTeardown),
+    cmocka_unit_test_setup_teardown(dxfwTraceWithEmprtyArgumentListTest, dxfwInitializedTestSetup, dxfwInitializedTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwCreateDestroyWindowTest, dxfwInitializedTestSetup, dxfwInitializedTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithZeroWidthTest, dxfwInitializedTestSetup, dxfwInitializedTestTeardown),
     cmocka_unit_test_setup_teardown(dxfwCreateWindowWithZeroHeightTest, dxfwInitializedTestSetup, dxfwInitializedTestTeardown),

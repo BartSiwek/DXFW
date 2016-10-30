@@ -191,3 +191,9 @@ void dxfwGetTimeTest(void **state) {
   assert_true(timestamp2 - timestamp1 > 0.01);
   assert_true(timestamp3 - timestamp2 > 0.02);
 }
+
+void dxfwTraceWithEmprtyArgumentListTest(void **state) {
+  DXFW_TEST_UNUSED(state);
+
+  DXFW_TRACE(__FILE__, __LINE__, false, "A message without any arguments");
+}

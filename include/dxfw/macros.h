@@ -50,11 +50,11 @@ extern "C" {
 #endif  // DXFW_DIRECTX_TRACE_WITH_ALLOC
 
 #ifndef DXFW_TRACE
-#define DXFW_TRACE(FILE, LINE, MSG_BOX, MSG, ...) (void)(FILE); (void)(LINE); (void)(MSG_BOX); (void)(MSG); (void)(__VA_ARGS__)
+#define DXFW_TRACE(FILE, LINE, MSG_BOX, MSG, ...) (void)(FILE); (void)(LINE); (void)(MSG_BOX); (void)(MSG); (void)((void)0, __VA_ARGS__)
 #endif  // DXFW_TRACE
 
 #ifndef DXFW_TRACE_WITH_ALLOC
-#define DXFW_TRACE_WITH_ALLOC(FILE, LINE, MSG_BOX, ALLOC, DEALLOC, MSG, ...) (void)(FILE); (void)(LINE); (void)(MSG_BOX); (void)(ALLOC); (void)(DEALLOC); (void)(MSG); (void)(__VA_ARGS__)
+#define DXFW_TRACE_WITH_ALLOC(FILE, LINE, MSG_BOX, ALLOC, DEALLOC, MSG, ...) (void)(FILE); (void)(LINE); (void)(MSG_BOX); (void)(ALLOC); (void)(DEALLOC); (void)(MSG); (void)((void)0, __VA_ARGS__)
 #endif  // DXFW_TRACE_WITH_ALLOC
 
 #endif  // defined(DEBUG) | defined(_DEBUG)

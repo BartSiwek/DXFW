@@ -293,3 +293,12 @@ WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT hRawInput, UINT uiCommand, LPVO
 
   return (UINT)mock();
 }
+
+WINUSERAPI int WINAPI MessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType) {
+  DXFW_TEST_UNUSED(hWnd);
+  DXFW_TEST_UNUSED(lpText);
+  DXFW_TEST_UNUSED(lpCaption);
+  DXFW_TEST_UNUSED(uType);
+
+  return (int)mock();
+}
