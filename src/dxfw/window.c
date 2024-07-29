@@ -256,7 +256,7 @@ LRESULT CALLBACK dxfwInternalWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
       break;
     }
     case WM_SIZE: {
-      if (wparam == SIZE_RESTORED) {
+      if (wparam == SIZE_RESTORED || wparam == SIZE_MAXIMIZED) {
         dxfwFireSizeChangedEvent(hwnd, lparam);
       }
       break;
